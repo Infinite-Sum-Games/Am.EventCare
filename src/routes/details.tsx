@@ -16,7 +16,13 @@ import {
     Home,
     Clock,
     LogIn,
-    LogOut
+    LogOut,
+    Mars,
+    Venus,
+    Loader2,
+    Search,
+    Mail,
+    Phone
 } from 'lucide-react'
 import {
     Select,
@@ -27,6 +33,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import {
+    Alert,
+    AlertDescription,
+    AlertTitle,
+} from "@/components/ui/alert"
 
 export const Route = createFileRoute('/details')({
     component: ResponsesPage,
@@ -34,10 +45,10 @@ export const Route = createFileRoute('/details')({
 
 function ResponsesPage() {
     const [search, setSearch] = useState("")
-    const [hostelFilter, setHostelFilter] = useState("Hostels")
+    const [hostelFilter, setHostelFilter] = useState("All hostels")
     const [genderFilter, setGenderFilter] = useState("All") // "All" | "Male" | "Female"
-    const [collegeFilter, setCollegeFilter] = useState("Colleges")
-    const [paymentFilter, setPaymentFilter] = useState("Status")
+    const [collegeFilter, setCollegeFilter] = useState("All colleges")
+    const [paymentFilter, setPaymentFilter] = useState("All")
 
     const { data: responses, isLoading, error } = useQuery({
         queryKey: ['responses'],
@@ -51,11 +62,11 @@ function ResponsesPage() {
                 r.fullName.toLowerCase().includes(search.toLowerCase()) ||
                 r.email.toLowerCase().includes(search.toLowerCase());
 
-            const matchesHostel = hostelFilter === "Hostels" || r.hostel === hostelFilter;
+            const matchesHostel = hostelFilter === "All hostels" || r.hostel === hostelFilter;
             // Strict gender filter if not All, otherwise loose
             const matchesGender = genderFilter === "All" || r.gender === genderFilter;
-            const matchesCollege = collegeFilter === "Colleges" || r.college === collegeFilter;
-            const matchesPayment = paymentFilter === "Status" || r.paymentStatus === paymentFilter;
+            const matchesCollege = collegeFilter === "All colleges" || r.college === collegeFilter;
+            const matchesPayment = paymentFilter === "All" || r.paymentStatus === paymentFilter;
 
             return matchesSearch && matchesHostel && matchesGender && matchesCollege && matchesPayment;
         });
@@ -69,14 +80,29 @@ function ResponsesPage() {
 
     // Active filter count for badge
     const activeFilterCount = [
-        hostelFilter !== "Hostels",
+        hostelFilter !== "All hostels",
         genderFilter !== "All",
-        collegeFilter !== "Colleges",
-        paymentFilter !== "Status"
+        collegeFilter !== "All colleges",
+        paymentFilter !== "All"
     ].filter(Boolean).length;
 
-    if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading responses...</div>
-    if (error) return <div className="p-8 text-center text-destructive">Error loading data</div>
+    if (isLoading) return (
+        <div className="flex flex-col items-center justify-center h-screen gap-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-muted-foreground animate-pulse">Loading responses...</p>
+        </div>
+    )
+    if (error) return (
+        <div className="p-8 max-w-md mx-auto">
+            <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>
+                    Error loading data. Please try again later.
+                </AlertDescription>
+            </Alert>
+        </div>
+    )
 
     return (
         <div className="p-6 space-y-6 min-h-screen bg-background text-foreground font-sans animate-in fade-in duration-500">
@@ -91,14 +117,16 @@ function ResponsesPage() {
             </div>
 
             <Card className="bg-transparent border-0 shadow-none">
-                <CardHeader className="px-0 pb-6 space-y-4">
+                <CardHeader className="px-0 pb-2 space-y-6">
                     {/* Search and Filters Container */}
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         {/* Search */}
-                        <div className="max-w-md">
+                        {/* Search */}
+                        <div className="max-w-md relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
                             <Input
                                 placeholder="Search by name or email..."
-                                className="bg-background border-input text-foreground focus-visible:ring-ring"
+                                className="pl-9 bg-background border-input text-foreground focus-visible:ring-ring"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                             />
@@ -113,7 +141,7 @@ function ResponsesPage() {
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => setGenderFilter("All")}
-                                    className={`h-9 rounded-md px-4 text-xs font-medium transition-all duration-300 border
+                                    className={`h-7 rounded-md px-4 text-sm font-medium transition-all duration-300 border
                                         ${genderFilter === 'All'
                                             ? 'bg-amber-500/5 backdrop-blur-md border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)] text-amber-500'
                                             : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-transparent'}`}
@@ -124,7 +152,7 @@ function ResponsesPage() {
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => setGenderFilter("Male")}
-                                    className={`h-9 rounded-md px-4 text-xs font-medium transition-all duration-300 border
+                                    className={`h-7 rounded-md px-4 text-sm font-medium transition-all duration-300 border
                                         ${genderFilter === 'Male'
                                             ? 'bg-amber-500/5 backdrop-blur-md border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)] text-amber-500'
                                             : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-transparent'}`}
@@ -135,7 +163,7 @@ function ResponsesPage() {
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => setGenderFilter("Female")}
-                                    className={`h-9 rounded-md px-4 text-xs font-medium transition-all duration-300 border
+                                    className={`h-7 rounded-md px-4 text-sm font-medium transition-all duration-300 border
                                         ${genderFilter === 'Female'
                                             ? 'bg-amber-500/5 backdrop-blur-md border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)] text-amber-500'
                                             : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-transparent'}`}
@@ -148,12 +176,12 @@ function ResponsesPage() {
                             <Select value={collegeFilter} onValueChange={setCollegeFilter}>
                                 <SelectTrigger className="w-[200px] pl-9 relative bg-background/50 border-input">
                                     <School size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                                    <SelectValue placeholder="Colleges" />
+                                    <SelectValue placeholder="All colleges" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
                                         <SelectLabel>Colleges</SelectLabel>
-                                        <SelectItem value="Colleges">Colleges</SelectItem>
+                                        <SelectItem value="All colleges">All colleges</SelectItem>
                                         {uniqueColleges.map(c => (
                                             <SelectItem key={c} value={c}>{c}</SelectItem>
                                         ))}
@@ -165,12 +193,12 @@ function ResponsesPage() {
                             <Select value={hostelFilter} onValueChange={setHostelFilter}>
                                 <SelectTrigger className="w-[150px] pl-9 relative bg-background/50 border-input">
                                     <Building size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                                    <SelectValue placeholder="Hostels" />
+                                    <SelectValue placeholder="All hostels" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
                                         <SelectLabel>Hostels</SelectLabel>
-                                        <SelectItem value="Hostels">Hostels</SelectItem>
+                                        <SelectItem value="All hostels">All hostels</SelectItem>
                                         <SelectItem value="A">Hostel A</SelectItem>
                                         <SelectItem value="B">Hostel B</SelectItem>
                                         <SelectItem value="C">Hostel C</SelectItem>
@@ -179,37 +207,60 @@ function ResponsesPage() {
                                 </SelectContent>
                             </Select>
 
-                            {/* Payment Dropdown */}
-                            <Select value={paymentFilter} onValueChange={setPaymentFilter}>
-                                <SelectTrigger className="w-[150px] pl-9 relative bg-background/50 border-input">
-                                    <CreditCard size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                                    <SelectValue placeholder="Status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel>Status</SelectLabel>
-                                        <SelectItem value="Status">Status</SelectItem>
-                                        <SelectItem value="Paid">Paid</SelectItem>
-                                        <SelectItem value="Pending">Pending</SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
+                            {/* Payment Toggle Group */}
+                            <div className="flex items-center gap-1 p-1 rounded-lg border border-input bg-card/50">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setPaymentFilter("All")}
+                                    className={`h-7 rounded-md px-4 text-sm font-medium transition-all duration-300 border
+                                        ${paymentFilter === 'All'
+                                            ? 'bg-amber-500/5 backdrop-blur-md border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)] text-amber-500'
+                                            : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-transparent'}`}
+                                >
+                                    All
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setPaymentFilter("Paid")}
+                                    className={`h-7 rounded-md px-4 text-sm font-medium transition-all duration-300 border
+                                        ${paymentFilter === 'Paid'
+                                            ? 'bg-amber-500/5 backdrop-blur-md border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)] text-amber-500'
+                                            : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-transparent'}`}
+                                >
+                                    Paid
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setPaymentFilter("Pending")}
+                                    className={`h-7 rounded-md px-4 text-sm font-medium transition-all duration-300 border
+                                        ${paymentFilter === 'Pending'
+                                            ? 'bg-amber-500/5 backdrop-blur-md border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)] text-amber-500'
+                                            : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-transparent'}`}
+                                >
+                                    Pending
+                                </Button>
+                            </div>
+
+
 
                             {/* Clear Filters (Conditional) */}
                             {activeFilterCount > 0 && (
                                 <button
                                     onClick={() => {
-                                        setHostelFilter("Hostels");
+                                        setHostelFilter("All hostels");
                                         setGenderFilter("All");
-                                        setCollegeFilter("Colleges");
-                                        setPaymentFilter("Status");
+                                        setCollegeFilter("All colleges");
+                                        setPaymentFilter("All");
                                     }}
-                                    className="flex items-center justify-center gap-2 p-2 rounded-lg 
-                                             text-xs font-medium text-red-400
+                                    className="flex items-center justify-center gap-2 rounded-md 
+                                             text-sm font-medium text-red-400
                                              bg-red-500/10 border border-red-500/20
                                              shadow-[0_0_10px_rgba(220,38,38,0.1)]
                                              hover:bg-red-500/20 hover:shadow-[0_0_15px_rgba(220,38,38,0.2)]
-                                             transition-all duration-300 group h-10 px-4"
+                                             transition-all duration-300 group h-9 px-4"
                                 >
                                     <CircleX size={16} className="group-hover:scale-105 transition-transform" />
                                     <span>Clear Filters</span>
@@ -218,22 +269,34 @@ function ResponsesPage() {
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent className="px-0">
-                    <div className="flex flex-col gap-4">
+                <CardContent className="px-0 pt-0">
+                    <div className="flex flex-col gap-2">
                         {filteredResponses.map(response => (
                             <div key={response.id} className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
                                 {/* Card Flex */}
-                                <div className="flex flex-col lg:flex-row gap-6 items-stretch">
+                                <div className="flex flex-col lg:flex-row gap-6 lg:gap-0 items-stretch">
                                     {/* LEFT SECTION: BIO */}
-                                    <div className="flex-[1.5] min-w-[240px] flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-border/50 pb-6 lg:pb-0 lg:pr-6">
+                                    <div className="flex-[2] min-w-[240px] flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-border/50 pb-6 lg:pb-0 lg:pr-3">
                                         <div>
                                             <h3 className="text-xl font-bold uppercase tracking-wide text-foreground">{response.fullName}</h3>
-                                            <p className="text-sm text-muted-foreground mt-1">{response.email}</p>
+                                            <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                                                <Mail size={12} />
+                                                <span>{response.email}</span>
+                                                <span className="text-border">|</span>
+                                                <Phone size={12} />
+                                                <span>{response.phone}</span>
+                                            </div>
                                         </div>
                                         <div className="flex items-center gap-3 mt-4">
                                             {/* Gender */}
                                             <div className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-input bg-muted/20">
-                                                <User size={14} className="text-muted-foreground" />
+                                                {response.gender === 'Male' ? (
+                                                    <Mars size={14} className="text-muted-foreground" />
+                                                ) : response.gender === 'Female' ? (
+                                                    <Venus size={14} className="text-muted-foreground" />
+                                                ) : (
+                                                    <User size={14} className="text-muted-foreground" />
+                                                )}
                                                 <span className="text-sm font-medium uppercase">{response.gender}</span>
                                             </div>
                                             {/* Payment */}
@@ -241,11 +304,22 @@ function ResponsesPage() {
                                                 {response.paymentStatus === 'Paid' ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
                                                 <span className="text-sm font-bold uppercase">{response.paymentStatus}</span>
                                             </div>
+                                            {/* Status - Moved from Section 2 */}
+                                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md border 
+                                                ${response.checkInStatus === 'Checked In' ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-600' : ''}
+                                                ${response.checkInStatus === 'Reserved' ? 'border-amber-500/30 bg-amber-500/5 text-amber-600' : ''}
+                                                ${response.checkInStatus === 'Checked Out' ? 'border-red-500/20 bg-red-500/5 text-red-400' : ''}
+                                             `}>
+                                                {response.checkInStatus === 'Checked In' && <CheckCircle2 size={14} />}
+                                                {response.checkInStatus === 'Reserved' && <Clock size={14} />}
+                                                {response.checkInStatus === 'Checked Out' && <LogOut size={14} />}
+                                                <span className="text-sm font-bold uppercase">{response.checkInStatus}</span>
+                                            </div>
                                         </div>
                                     </div>
 
                                     {/* MIDDLE SECTION: DETAILS */}
-                                    <div className="flex-[2] flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-border/50 pb-6 lg:pb-0 lg:pr-6 lg:pl-6">
+                                    <div className="flex-[1.5] flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-border/50 pb-6 lg:pb-0 lg:pr-6 lg:pl-3">
                                         <div>
                                             <p className="text-sm font-bold text-foreground uppercase tracking-wide mb-1 line-clamp-1" title={response.college}>{response.college}</p>
                                             <p className="font-mono text-sm text-amber-600/90">{response.rollNumber}</p>
@@ -259,44 +333,32 @@ function ResponsesPage() {
                                                     <p className="font-medium text-sm truncate">{response.hostel === 'Not Assigned' ? 'Not Assigned' : `Hostel ${response.hostel}`}</p>
                                                 </div>
                                             </div>
-                                            {/* Status */}
-                                            <div className={`flex-1 min-w-[140px] flex items-center gap-3 p-2 rounded-lg border 
-                                                ${response.checkInStatus === 'Checked In' ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-600' : ''}
-                                                ${response.checkInStatus === 'Reserved' ? 'border-amber-500/30 bg-amber-500/5 text-amber-600' : ''}
-                                                ${response.checkInStatus === 'Checked Out' ? 'border-red-500/20 bg-red-500/5 text-red-400' : ''}
-                                             `}>
-                                                {response.checkInStatus === 'Checked In' && <CheckCircle2 size={18} />}
-                                                {response.checkInStatus === 'Reserved' && <Clock size={18} />}
-                                                {response.checkInStatus === 'Checked Out' && <LogOut size={18} />}
-                                                <div>
-                                                    <p className="text-[10px] uppercase opacity-70 font-semibold">Status</p>
-                                                    <p className="font-bold text-sm">{response.checkInStatus}</p>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
 
                                     {/* RIGHT SECTION: DATES */}
                                     <div className="flex-none flex gap-3 lg:pl-6 items-center justify-end">
                                         {/* Check In */}
-                                        <div className="w-32 border border-border rounded-xl p-3 flex flex-col items-center justify-center gap-1 min-h-[90px] relative overflow-hidden group/date bg-card">
+                                        <div className={`w-32 border border-border rounded-xl p-3 flex flex-col items-center justify-center gap-1 min-h-[90px] relative overflow-hidden group/date 
+                                            ${response.checkInStatus === 'Checked In' ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-500' : 'bg-card'}`}>
                                             <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
                                                 <LogIn size={12} />
                                                 <span className="text-[10px] uppercase font-bold">Check In</span>
                                             </div>
-                                            <div className="text-xl font-bold text-foreground">{response.checkInDate}</div>
+                                            <div className={`text-xl font-bold ${response.checkInStatus === 'Checked In' ? 'text-emerald-500' : 'text-foreground'}`}>{response.checkInDate}</div>
                                             <div className="mt-1 text-[10px] font-mono bg-muted/50 rounded px-1.5 py-0.5">
                                                 {response.checkInTime}
                                             </div>
                                         </div>
 
                                         {/* Check Out */}
-                                        <div className="w-32 border border-border rounded-xl p-3 flex flex-col items-center justify-center gap-1 min-h-[90px] relative overflow-hidden group/date bg-card">
+                                        <div className={`w-32 border border-border rounded-xl p-3 flex flex-col items-center justify-center gap-1 min-h-[90px] relative overflow-hidden group/date
+                                            ${response.checkInStatus === 'Checked Out' ? 'border-red-500/20 bg-red-500/5 text-red-400' : 'bg-card'}`}>
                                             <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
                                                 <LogOut size={12} />
                                                 <span className="text-[10px] uppercase font-bold">Check Out</span>
                                             </div>
-                                            <div className="text-xl font-bold text-foreground">{response.checkOutDate}</div>
+                                            <div className={`text-xl font-bold ${response.checkInStatus === 'Checked Out' ? 'text-red-400' : 'text-foreground'}`}>{response.checkOutDate}</div>
                                             <div className="mt-1 text-[10px] font-mono bg-muted/50 rounded px-1.5 py-0.5">
                                                 {response.checkOutTime}
                                             </div>
