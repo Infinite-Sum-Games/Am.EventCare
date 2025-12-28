@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { Users, CheckCircle, Activity, LogOut } from 'lucide-react'
+import { Users, BarChart3, Activity, LogOut } from 'lucide-react'
 
 export default function Sidebar() {
     return (
@@ -13,7 +13,7 @@ export default function Sidebar() {
 
             <nav className="flex-1 p-4 space-y-2">
                 <Link
-                    to="/responses"
+                    to="/details"
                     className="flex items-center gap-3 p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
                     activeProps={{
                         className: 'flex items-center gap-3 p-3 rounded-lg bg-amber-500/10 backdrop-blur-md border border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)] text-amber-500 font-medium'
@@ -24,25 +24,25 @@ export default function Sidebar() {
                 </Link>
 
                 <Link
-                    to="/checkin"
+                    to="/logs"
                     className="flex items-center gap-3 p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
                     activeProps={{
                         className: 'flex items-center gap-3 p-3 rounded-lg bg-amber-500/10 backdrop-blur-md border border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)] text-amber-500 font-medium'
                     }}
                 >
                     <Activity size={20} />
-                    <span>Activity</span>
+                    <span>Logs</span>
                 </Link>
 
                 <Link
-                    to="/status"
+                    to="/analytics"
                     className="flex items-center gap-3 p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
                     activeProps={{
                         className: 'flex items-center gap-3 p-3 rounded-lg bg-amber-500/10 backdrop-blur-md border border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)] text-amber-500 font-medium'
                     }}
                 >
-                    <CheckCircle size={20} />
-                    <span>Status</span>
+                    <BarChart3 size={20} />
+                    <span>Analytics</span>
                 </Link>
             </nav>
 

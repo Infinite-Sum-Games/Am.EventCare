@@ -4,11 +4,11 @@ import { getStats, getResponses } from '@/mocks/data'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Activity, User } from "lucide-react"
 
-export const Route = createFileRoute('/checkin')({
-    component: CheckInPage,
+export const Route = createFileRoute('/logs')({
+    component: LogsPage,
 })
 
-function CheckInPage() {
+function LogsPage() {
     const { data: stats } = useQuery({
         queryKey: ['stats'],
         queryFn: getStats,
@@ -28,7 +28,7 @@ function CheckInPage() {
     return (
         <div className="p-6 min-h-screen bg-background text-foreground font-sans animate-in fade-in duration-500 space-y-8">
             <div className="mb-2">
-                <h1 className="text-3xl font-bold tracking-tight text-foreground">Activity</h1>
+                <h1 className="text-3xl font-bold tracking-tight text-foreground">Activity Logs</h1>
                 <p className="text-muted-foreground mt-1">Real-time occupancy and activity overview.</p>
             </div>
 

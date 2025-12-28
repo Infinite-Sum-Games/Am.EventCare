@@ -9,21 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as StatusRouteImport } from './routes/status'
-import { Route as ResponsesRouteImport } from './routes/responses'
+import { Route as LogsRouteImport } from './routes/logs'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as CheckinRouteImport } from './routes/checkin'
+import { Route as DetailsRouteImport } from './routes/details'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 
-const StatusRoute = StatusRouteImport.update({
-  id: '/status',
-  path: '/status',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResponsesRoute = ResponsesRouteImport.update({
-  id: '/responses',
-  path: '/responses',
+const LogsRoute = LogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -31,9 +26,14 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CheckinRoute = CheckinRouteImport.update({
-  id: '/checkin',
-  path: '/checkin',
+const DetailsRoute = DetailsRouteImport.update({
+  id: '/details',
+  path: '/details',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -49,79 +49,72 @@ const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/checkin': typeof CheckinRoute
+  '/analytics': typeof AnalyticsRoute
+  '/details': typeof DetailsRoute
   '/login': typeof LoginRoute
-  '/responses': typeof ResponsesRoute
-  '/status': typeof StatusRoute
+  '/logs': typeof LogsRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/checkin': typeof CheckinRoute
+  '/analytics': typeof AnalyticsRoute
+  '/details': typeof DetailsRoute
   '/login': typeof LoginRoute
-  '/responses': typeof ResponsesRoute
-  '/status': typeof StatusRoute
+  '/logs': typeof LogsRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/checkin': typeof CheckinRoute
+  '/analytics': typeof AnalyticsRoute
+  '/details': typeof DetailsRoute
   '/login': typeof LoginRoute
-  '/responses': typeof ResponsesRoute
-  '/status': typeof StatusRoute
+  '/logs': typeof LogsRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/checkin'
+    | '/analytics'
+    | '/details'
     | '/login'
-    | '/responses'
-    | '/status'
+    | '/logs'
     | '/demo/tanstack-query'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/checkin'
+    | '/analytics'
+    | '/details'
     | '/login'
-    | '/responses'
-    | '/status'
+    | '/logs'
     | '/demo/tanstack-query'
   id:
     | '__root__'
     | '/'
-    | '/checkin'
+    | '/analytics'
+    | '/details'
     | '/login'
-    | '/responses'
-    | '/status'
+    | '/logs'
     | '/demo/tanstack-query'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CheckinRoute: typeof CheckinRoute
+  AnalyticsRoute: typeof AnalyticsRoute
+  DetailsRoute: typeof DetailsRoute
   LoginRoute: typeof LoginRoute
-  ResponsesRoute: typeof ResponsesRoute
-  StatusRoute: typeof StatusRoute
+  LogsRoute: typeof LogsRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/status': {
-      id: '/status'
-      path: '/status'
-      fullPath: '/status'
-      preLoaderRoute: typeof StatusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/responses': {
-      id: '/responses'
-      path: '/responses'
-      fullPath: '/responses'
-      preLoaderRoute: typeof ResponsesRouteImport
+    '/logs': {
+      id: '/logs'
+      path: '/logs'
+      fullPath: '/logs'
+      preLoaderRoute: typeof LogsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -131,11 +124,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/checkin': {
-      id: '/checkin'
-      path: '/checkin'
-      fullPath: '/checkin'
-      preLoaderRoute: typeof CheckinRouteImport
+    '/details': {
+      id: '/details'
+      path: '/details'
+      fullPath: '/details'
+      preLoaderRoute: typeof DetailsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -157,10 +157,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CheckinRoute: CheckinRoute,
+  AnalyticsRoute: AnalyticsRoute,
+  DetailsRoute: DetailsRoute,
   LoginRoute: LoginRoute,
-  ResponsesRoute: ResponsesRoute,
-  StatusRoute: StatusRoute,
+  LogsRoute: LogsRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
 }
 export const routeTree = rootRouteImport

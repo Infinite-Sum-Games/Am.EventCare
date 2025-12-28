@@ -1,10 +1,10 @@
-import { useNavigate, createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { getResponses } from '@/mocks/data'
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import {
     Building,
     School,
@@ -28,19 +28,11 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 
-export const Route = createFileRoute('/responses')({
+export const Route = createFileRoute('/details')({
     component: ResponsesPage,
 })
 
 function ResponsesPage() {
-    const navigate = useNavigate()
-    // Auth check
-    useEffect(() => {
-        if (!localStorage.getItem("isAuthenticated")) {
-            navigate({ to: '/login' })
-        }
-    }, [navigate])
-
     const [search, setSearch] = useState("")
     const [hostelFilter, setHostelFilter] = useState("Hostels")
     const [genderFilter, setGenderFilter] = useState("All") // "All" | "Male" | "Female"
@@ -260,7 +252,7 @@ function ResponsesPage() {
                                         </div>
                                         <div className="flex flex-wrap items-center gap-4 mt-4">
                                             {/* Hostel */}
-                                            <div className={`flex-1 min-w-[140px] flex items-center gap-3 p-2 rounded-lg border ${response.hostel !== 'Not Assigned' ? 'border-border bg-card' : 'border-red-500/30 bg-red-500/5 text-red-500'}`}>
+                                            <div className={`flex-1 min-w-[140px] flex items-center gap-3 p-2 rounded-lg border ${response.hostel !== 'Not Assigned' ? 'border-border bg-card' : 'border-red-500/20 bg-red-500/5 text-red-400'}`}>
                                                 <Home size={18} className="opacity-70" />
                                                 <div>
                                                     <p className="text-[10px] uppercase text-muted-foreground font-semibold">Hostel</p>
@@ -271,7 +263,7 @@ function ResponsesPage() {
                                             <div className={`flex-1 min-w-[140px] flex items-center gap-3 p-2 rounded-lg border 
                                                 ${response.checkInStatus === 'Checked In' ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-600' : ''}
                                                 ${response.checkInStatus === 'Reserved' ? 'border-amber-500/30 bg-amber-500/5 text-amber-600' : ''}
-                                                ${response.checkInStatus === 'Checked Out' ? 'border-red-500/30 bg-red-500/5 text-red-600' : ''}
+                                                ${response.checkInStatus === 'Checked Out' ? 'border-red-500/20 bg-red-500/5 text-red-400' : ''}
                                              `}>
                                                 {response.checkInStatus === 'Checked In' && <CheckCircle2 size={18} />}
                                                 {response.checkInStatus === 'Reserved' && <Clock size={18} />}

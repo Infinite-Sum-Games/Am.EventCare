@@ -21,7 +21,7 @@ function LoginPage() {
     // Mock login
     if (email && password) {
       localStorage.setItem("isAuthenticated", "true")
-      navigate({ to: '/responses' })
+      navigate({ to: '/details' })
     }
   }
 
@@ -49,7 +49,7 @@ function LoginPage() {
               <label className="text-sm font-medium text-foreground">Email</label>
               <Input
                 type="email"
-                placeholder="vol@anokha.amrita.edu"
+                placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="bg-background/50 border-input font-medium"
