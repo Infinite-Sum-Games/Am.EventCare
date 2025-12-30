@@ -193,7 +193,7 @@ function ResponsesPage() {
 
                             {/* College Dropdown */}
                             <Select value={collegeFilter} onValueChange={setCollegeFilter}>
-                                <SelectTrigger className="w-[200px] pl-9 relative bg-background/50 border-input">
+                                <SelectTrigger className="w-[275px] pl-9 relative bg-background/50 border-input">
                                     <School size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                                     <SelectValue placeholder="All colleges" />
                                 </SelectTrigger>
@@ -210,7 +210,7 @@ function ResponsesPage() {
 
                             {/* Hostel Dropdown */}
                             <Select value={hostelFilter} onValueChange={setHostelFilter}>
-                                <SelectTrigger className="w-[150px] pl-9 relative bg-background/50 border-input">
+                                <SelectTrigger className="w-[275px] pl-9 relative bg-background/50 border-input">
                                     <Building size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                                     <SelectValue placeholder="All hostels" />
                                 </SelectTrigger>
