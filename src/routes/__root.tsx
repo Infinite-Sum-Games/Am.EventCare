@@ -1,11 +1,5 @@
-import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
-
-import Header from '../components/Header'
-
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
-
+import { Outlet, createRootRouteWithContext, useLocation } from '@tanstack/react-router'
+import Sidebar from '../components/Sidebar'
 import type { QueryClient } from '@tanstack/react-query'
 
 interface MyRouterContext {
@@ -13,22 +7,19 @@ interface MyRouterContext {
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
-  component: () => (
-    <>
-      <Header />
-      <Outlet />
-      <TanStackDevtools
-        config={{
-          position: 'bottom-right',
-        }}
-        plugins={[
-          {
-            name: 'Tanstack Router',
-            render: <TanStackRouterDevtoolsPanel />,
-          },
-          TanStackQueryDevtools,
-        ]}
-      />
-    </>
-  ),
+  component: RootComponent,
 })
+
+function RootComponent() {
+  const location = useLocation()
+  const isLoginPage = location.pathname === '/login'
+
+  return (
+    <div className="flex h-screen bg-background text-foreground overflow-hidden">
+      {!isLoginPage && <Sidebar />}
+      <main className="flex-1 overflow-y-auto">
+        <Outlet />
+      </main>
+    </div>
+  )
+}
