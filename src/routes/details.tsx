@@ -8,7 +8,6 @@ import { useState, useMemo } from 'react'
 import {
     Building,
     School,
-    CreditCard,
     CircleX,
     User,
     CheckCircle2,
@@ -22,7 +21,11 @@ import {
     Loader2,
     Search,
     Mail,
-    Phone
+    Phone,
+    ChevronLeft,
+    ChevronRight,
+    ChevronsLeft,
+    ChevronsRight
 } from 'lucide-react'
 import {
     Select,
@@ -50,6 +53,10 @@ function ResponsesPage() {
     const [collegeFilter, setCollegeFilter] = useState("All colleges")
     const [paymentFilter, setPaymentFilter] = useState("All")
 
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1)
+    const ITEMS_PER_PAGE = 50
+
     const { data: responses, isLoading, error } = useQuery({
         queryKey: ['responses'],
         queryFn: getResponses,
@@ -71,6 +78,18 @@ function ResponsesPage() {
             return matchesSearch && matchesHostel && matchesGender && matchesCollege && matchesPayment;
         });
     }, [responses, search, hostelFilter, genderFilter, collegeFilter, paymentFilter]);
+
+    // Derived Pagination Logic
+    const totalPages = Math.ceil(filteredResponses.length / ITEMS_PER_PAGE);
+    const paginatedResponses = filteredResponses.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+    );
+
+    // Reset page when filters change
+    useMemo(() => {
+        setCurrentPage(1);
+    }, [search, hostelFilter, genderFilter, collegeFilter, paymentFilter]);
 
     // Extract unique colleges for filter
     const uniqueColleges = useMemo(() => {
@@ -271,7 +290,7 @@ function ResponsesPage() {
                 </CardHeader>
                 <CardContent className="px-0 pt-0">
                     <div className="flex flex-col gap-2">
-                        {filteredResponses.map(response => (
+                        {paginatedResponses.map(response => (
                             <div key={response.id} className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
                                 {/* Card Flex */}
                                 <div className="flex flex-col lg:flex-row gap-6 lg:gap-0 items-stretch">
@@ -353,12 +372,12 @@ function ResponsesPage() {
 
                                         {/* Check Out */}
                                         <div className={`w-32 border border-border rounded-xl p-3 flex flex-col items-center justify-center gap-1 min-h-[90px] relative overflow-hidden group/date
-                                            ${response.checkInStatus === 'Checked Out' ? 'border-red-500/20 bg-red-500/5 text-red-400' : 'bg-card'}`}>
+                                            ${response.checkInStatus === 'Checked Out' ? 'border-red-500/30 bg-red-500/10 text-red-500' : 'bg-card'}`}>
                                             <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
                                                 <LogOut size={12} />
                                                 <span className="text-[10px] uppercase font-bold">Check Out</span>
                                             </div>
-                                            <div className={`text-xl font-bold ${response.checkInStatus === 'Checked Out' ? 'text-red-400' : 'text-foreground'}`}>{response.checkOutDate}</div>
+                                            <div className={`text-xl font-bold ${response.checkInStatus === 'Checked Out' ? 'text-red-500' : 'text-foreground'}`}>{response.checkOutDate}</div>
                                             <div className="mt-1 text-[10px] font-mono bg-muted/50 rounded px-1.5 py-0.5">
                                                 {response.checkOutTime}
                                             </div>
@@ -374,6 +393,58 @@ function ResponsesPage() {
                                 </div>
                                 <h3 className="text-lg font-medium text-foreground">No bookings found</h3>
                                 <p className="text-muted-foreground mt-1">Try adjusting your filters to find what you're looking for.</p>
+                            </div>
+                        )}
+
+                        {/* Pagination Controls */}
+                        {filteredResponses.length > 0 && (
+                            <div className="flex items-center justify-between mt-4 py-4 border-t border-border">
+                                <p className="text-sm text-muted-foreground">
+                                    Showing <span className="font-medium text-foreground">{(currentPage - 1) * ITEMS_PER_PAGE + 1}</span> to <span className="font-medium text-foreground">{Math.min(currentPage * ITEMS_PER_PAGE, filteredResponses.length)}</span> of <span className="font-medium text-foreground">{filteredResponses.length}</span> results
+                                </p>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(1)}
+                                        disabled={currentPage === 1}
+                                        className="h-8 w-8 p-0"
+                                    >
+                                        <ChevronsLeft className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                        disabled={currentPage === 1}
+                                        className="h-8 w-8 p-0"
+                                    >
+                                        <ChevronLeft className="h-4 w-4" />
+                                    </Button>
+
+                                    <div className="flex items-center gap-1 mx-2">
+                                        <span className="text-sm font-medium">Page {currentPage} of {totalPages}</span>
+                                    </div>
+
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                        disabled={currentPage === totalPages}
+                                        className="h-8 w-8 p-0"
+                                    >
+                                        <ChevronRight className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(totalPages)}
+                                        disabled={currentPage === totalPages}
+                                        className="h-8 w-8 p-0"
+                                    >
+                                        <ChevronsRight className="h-4 w-4" />
+                                    </Button>
+                                </div>
                             </div>
                         )}
                     </div>
