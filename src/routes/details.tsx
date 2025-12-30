@@ -55,7 +55,7 @@ function ResponsesPage() {
 
     // Pagination State
     const [currentPage, setCurrentPage] = useState(1)
-    const ITEMS_PER_PAGE = 50
+    const ITEMS_PER_PAGE = 10
 
     const { data: responses, isLoading, error } = useQuery({
         queryKey: ['responses'],

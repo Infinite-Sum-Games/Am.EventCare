@@ -34,7 +34,7 @@ export default function Sidebar() {
                     <span>Logs</span>
                 </Link>
 
-                <Link
+                {/* <Link
                     to="/analytics"
                     className="flex items-center gap-3 p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
                     activeProps={{
@@ -43,7 +43,7 @@ export default function Sidebar() {
                 >
                     <BarChart3 size={20} />
                     <span>Analytics</span>
-                </Link>
+                </Link> */}
             </nav>
 
             <div className="p-4 border-t border-sidebar-border">

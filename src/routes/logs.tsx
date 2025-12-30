@@ -26,13 +26,38 @@ function LogsPage() {
         .slice(0, 8) || []
 
     return (
+        <>
+            <div className="flex flex-col items-center justify-center p-6 h-full bg-background text-foreground font-sans animate-in fade-in duration-500 space-y-8">
+                <div className="relative">
+                    <div className="absolute -inset-4 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full opacity-20 blur-xl animate-pulse"></div>
+                    <div className="relative bg-card border border-border p-4 rounded-full shadow-2xl animate-bounce">
+                        <Activity size={48} className="text-amber-500" />
+                    </div>
+                </div>
+
+                <div className="text-center space-y-2 max-w-md mx-auto">
+                    <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">
+                        Under Construction
+                    </h1>
+                    <p className="text-muted-foreground text-lg">
+                        We're building something awesome here. Check back soon for detailed activity logs!
+                    </p>
+                </div>
+
+                <div className="flex gap-2">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-[bounce_1s_infinite_0ms]"></span>
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-[bounce_1s_infinite_200ms]"></span>
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-[bounce_1s_infinite_400ms]"></span>
+                </div>
+            </div>
+
+            {/* 
         <div className="p-6 min-h-screen bg-background text-foreground font-sans animate-in fade-in duration-500 space-y-8">
             <div className="mb-2">
                 <h1 className="text-3xl font-bold tracking-tight text-foreground">Activity Logs</h1>
                 <p className="text-muted-foreground mt-1">Real-time occupancy and activity overview.</p>
             </div>
 
-            {/* Stats Overview - Horizontal */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Card className="bg-card border-border shadow-lg">
                     <CardHeader className="pb-2">
@@ -75,7 +100,6 @@ function LogsPage() {
                 </Card>
             </div>
 
-            {/* Recent Activity Section */}
             <div className="space-y-4">
                 <h2 className="text-xl font-semibold">Recent Activity</h2>
                 <Card className="bg-card border-border shadow-lg">
@@ -113,5 +137,7 @@ function LogsPage() {
                 </Card>
             </div>
         </div>
+        */}
+        </>
     )
 }
