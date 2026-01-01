@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { Users, BarChart3, Activity, LogOut } from 'lucide-react'
+import { Users, Activity, LogOut } from 'lucide-react'
 
 export default function Sidebar() {
     return (
