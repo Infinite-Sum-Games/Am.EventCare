@@ -1,28 +1,68 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useMutation } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import React from 'react'
 import { Eye, EyeOff } from 'lucide-react'
+import { axiosClient } from '@/lib/axios'
+import { api } from '@/lib/api'
+import { toast } from "sonner"
+import { useAuth } from '@/context/AuthContext'
 
 export const Route = createFileRoute('/login')({
   component: LoginPage,
 })
 
+export const hashPassword = async (password: string): Promise<string> => {
+  const textEncoder = new TextEncoder();
+  const data = textEncoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashedPassword;
+};
 function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
+  const { checkSession, user } = useAuth()
+
+  useEffect(() => {
+    if (user) {
+      navigate({ to: '/details' })
+    }
+  }, [user, navigate])
+
+
+  const { mutate: login, isPending } = useMutation({
+    mutationFn: async () => {
+      const hashedPassword = await hashPassword(password)
+      return axiosClient.post(api.LOGIN, {
+        "email": email,
+        "password": hashedPassword,
+      })
+    },
+    onSuccess: async () => {
+      toast.success("Login successful", {
+        description: "Welcome back!",
+      })
+      await checkSession()
+      navigate({ to: '/details' })
+    },
+    onError: (error) => {
+      toast.error("Login failed", {
+        description: "Please check your credentials and try again.",
+      })
+      console.error("Login error:", error)
+    },
+  })
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
-    // Mock login
-    if (email && password) {
-      localStorage.setItem("isAuthenticated", "true")
-      navigate({ to: '/details' })
-    }
+    login()
   }
 
   return (
@@ -76,8 +116,12 @@ function LoginPage() {
                 </button>
               </div>
             </div>
-            <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
-              Sign In
+            <Button
+              type="submit"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold"
+              disabled={isPending}
+            >
+              {isPending ? "Signing In..." : "Sign In"}
             </Button>
           </form>
         </CardContent>

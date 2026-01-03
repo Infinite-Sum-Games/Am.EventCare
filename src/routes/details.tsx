@@ -1,10 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { getResponses } from '@/mocks/data'
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import {
     Building,
     School,
@@ -42,15 +41,28 @@ import {
     AlertDescription,
     AlertTitle,
 } from "@/components/ui/alert"
+import { axiosClient } from '@/lib/axios'
+import { api } from '@/lib/api'
+import { useAuth } from '@/context/AuthContext'
 
 export const Route = createFileRoute('/details')({
     component: ResponsesPage,
 })
 
 // Helper Functions
-const formatTime = (time24: string) => {
-    if (!time24) return "";
-    const [hours, minutes] = time24.split(":").map(Number);
+const formatTime = (timeInput: string) => {
+    if (!timeInput) return "";
+
+    // Extract HH:MM using regex to handle potential date prefixes or full timestamps
+    const matches = timeInput.match(/(\d{1,2}):(\d{2})/);
+    if (!matches) return timeInput;
+
+    const [_, h, m] = matches;
+    const hours = parseInt(h, 10);
+    const minutes = parseInt(m, 10);
+
+    if (isNaN(hours) || isNaN(minutes)) return "";
+
     const suffix = hours >= 12 ? "PM" : "AM";
     const hours12 = hours % 12 || 12;
     return `${hours12.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${suffix}`;
@@ -78,8 +90,25 @@ const calculateDuration = (inDate: string, outDate: string) => {
     return diffDays;
 };
 
+const toTitleCase = (str: string) => {
+    if (!str) return "";
+    return str.replace(
+        /\w\S*/g,
+        text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
+    );
+};
+
 
 function ResponsesPage() {
+    const { user, isLoading: isAuthLoading } = useAuth()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (!isAuthLoading && !user) {
+            navigate({ to: '/login' })
+        }
+    }, [user, isAuthLoading, navigate])
+
     const [search, setSearch] = useState("")
     const [hostelFilter, setHostelFilter] = useState("All hostels")
     const [genderFilter, setGenderFilter] = useState("All") // "All" | "Male" | "Female"
@@ -91,8 +120,15 @@ function ResponsesPage() {
     const ITEMS_PER_PAGE = 10
 
     const { data: responses, isLoading, error } = useQuery({
-        queryKey: ['responses'],
-        queryFn: getResponses,
+        queryKey: ['details'],
+        queryFn: async () => {
+            // Only fetch if authenticated
+            if (!user) return [];
+            const res = await axiosClient.get(api.GET_ALL_ACCOMODATION)
+            console.log(res)
+            return res.data.requests;
+        },
+        enabled: !!user // Disable query if no user
     })
 
     const filteredResponses = useMemo(() => {
@@ -105,7 +141,10 @@ function ResponsesPage() {
             const matchesHostel = hostelFilter === "All hostels" || r.hostel === hostelFilter;
             // Strict gender filter if not All, otherwise loose
             const matchesGender = genderFilter === "All" || (genderFilter === "Male" ? r.is_male : !r.is_male);
-            const matchesCollege = collegeFilter === "All colleges" || r.college_name === collegeFilter;
+            // Case-insensitive / Normalized match for college
+            // collegeFilter is already Title Cased (from uniqueColleges options)
+            // So we normalize the data record's college name to match against it
+            const matchesCollege = collegeFilter === "All colleges" || toTitleCase(r.college_name) === collegeFilter;
             const matchesPayment = paymentFilter === "All" || (paymentFilter === "Paid" ? r.is_paid : !r.is_paid);
 
             return matchesSearch && matchesHostel && matchesGender && matchesCollege && matchesPayment;
@@ -124,10 +163,18 @@ function ResponsesPage() {
         setCurrentPage(1);
     }, [search, hostelFilter, genderFilter, collegeFilter, paymentFilter]);
 
-    // Extract unique colleges for filter
+    // Extract unique colleges for filter (Normalized to Title Case)
     const uniqueColleges = useMemo(() => {
         if (!responses) return [];
-        return Array.from(new Set(responses.map(r => r.college_name))).sort();
+        return Array.from(new Set(responses.map(r => toTitleCase(r.college_name)))).sort();
+    }, [responses]);
+
+    // Extract unique hostels for filter
+    const uniqueHostels = useMemo(() => {
+        if (!responses) return [] as string[];
+        return (Array.from(new Set(responses.map((r: any) => r.hostel as string))) as string[])
+            .filter((h) => h !== 'Not Assigned')
+            .sort();
     }, [responses]);
 
     // Active filter count for badge
@@ -251,10 +298,9 @@ function ResponsesPage() {
                                     <SelectGroup>
                                         <SelectLabel>Hostels</SelectLabel>
                                         <SelectItem value="All hostels">All hostels</SelectItem>
-                                        <SelectItem value="A">Hostel A</SelectItem>
-                                        <SelectItem value="B">Hostel B</SelectItem>
-                                        <SelectItem value="C">Hostel C</SelectItem>
-                                        <SelectItem value="D">Hostel D</SelectItem>
+                                        {uniqueHostels.map(h => (
+                                            <SelectItem key={h} value={h}>{h}</SelectItem>
+                                        ))}
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
@@ -380,7 +426,7 @@ function ResponsesPage() {
                                                 <Home size={18} className="opacity-70" />
                                                 <div>
                                                     <p className="text-[10px] uppercase text-muted-foreground font-semibold">Hostel</p>
-                                                    <p className="font-medium text-sm truncate">{response.hostel === 'Not Assigned' ? 'Not Assigned' : `Hostel ${response.hostel}`}</p>
+                                                    <p className="font-medium text-sm truncate">{response.hostel === 'Not Assigned' ? 'Not Assigned' : `${response.hostel}`}</p>
                                                 </div>
                                             </div>
 

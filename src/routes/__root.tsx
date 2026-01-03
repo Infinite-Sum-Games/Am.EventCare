@@ -1,6 +1,8 @@
 import { Outlet, createRootRouteWithContext, useLocation } from '@tanstack/react-router'
 import Sidebar from '../components/Sidebar'
+import { Toaster } from "@/components/ui/sonner"
 import type { QueryClient } from '@tanstack/react-query'
+import { AuthProvider } from '@/context/AuthContext'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -15,11 +17,14 @@ function RootComponent() {
   const isLoginPage = location.pathname === '/login'
 
   return (
-    <div className="flex h-screen bg-background text-foreground overflow-hidden">
-      {!isLoginPage && <Sidebar />}
-      <main className="flex-1 overflow-y-auto">
-        <Outlet />
-      </main>
-    </div>
+    <AuthProvider>
+      <div className="flex h-screen bg-background text-foreground overflow-hidden">
+        {!isLoginPage && <Sidebar />}
+        <main className="flex-1 overflow-y-auto">
+          <Outlet />
+        </main>
+        <Toaster />
+      </div>
+    </AuthProvider>
   )
 }

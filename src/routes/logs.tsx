@@ -1,11 +1,22 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Activity } from "lucide-react"
+import { useAuth } from '@/context/AuthContext'
+import { useEffect } from 'react'
 
 export const Route = createFileRoute('/logs')({
     component: LogsPage,
 })
 
 function LogsPage() {
+    const { user, isLoading: isAuthLoading } = useAuth()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (!isAuthLoading && !user) {
+            navigate({ to: '/login' })
+        }
+    }, [user, isAuthLoading, navigate])
+
     return (
         <>
             <div className="flex flex-col items-center justify-center p-6 h-full bg-background text-foreground font-sans animate-in fade-in duration-500 space-y-8">
