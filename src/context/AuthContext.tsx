@@ -1,8 +1,9 @@
-
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext } from "react";
 import { axiosClient } from "@/lib/axios";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 
 interface User {
     name: string;
@@ -19,41 +20,43 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    
+    const { data: sessionData, isLoading: isSessionLoading, refetch } = useQuery({
+        queryKey: ["session"],
+        queryFn: async () => {
+            const { data } = await axiosClient.get(api.SESSION);
+            return data;
+        },
+        retry: false,
+    });
+
+    const user = sessionData ? {
+        name: sessionData.name,
+        email: sessionData.email,
+    } : null;
+
+    const { mutate: logout } = useMutation({
+        mutationFn: async () => {
+            await axiosClient.post(api.LOGOUT);
+        },
+        onSuccess: () => {
+            queryClient.setQueryData(["session"], null);
+            toast.success("Logged out successfully");
+            navigate({ to: "/login" });
+        },
+        onError: () => {
+            toast.error("Logout failed. Please try again.");
+        },
+    });
 
     const checkSession = async () => {
-        try {
-            const { data } = await axiosClient.get(api.SESSION);
-            setUser({
-                name: data.name,
-                email: data.email,
-            });
-        } catch {
-            setUser(null);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const logout = async () => {
-        try {
-            await axiosClient.post(api.LOGOUT);
-            setUser(null);
-            toast.success("Logged out successfully");
-            window.location.href = "/login";
-        } catch (error) {
-            console.error("Logout failed:", error);
-            toast.error("Logout failed. Please try again.");
-        }
-    };
-
-    useEffect(() => {
-        checkSession();
-    }, []);
+        await refetch();
+    }
 
     return (
-        <AuthContext.Provider value={{ user, isLoading, checkSession, logout }}>
+        <AuthContext.Provider value={{ user, isLoading: isSessionLoading, checkSession, logout: async () => logout() }}>
             {children}
         </AuthContext.Provider>
     );

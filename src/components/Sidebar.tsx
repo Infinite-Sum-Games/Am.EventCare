@@ -62,7 +62,7 @@ export default function Sidebar() {
                     </div>
 
                     <button
-                        onClick={logout}
+                        onClick={() => logout()}
                         className="w-full flex items-center justify-center gap-2 p-2 rounded-lg 
                                  text-xs font-medium text-muted-foreground
                                  bg-black/20 backdrop-blur-sm border border-transparent
