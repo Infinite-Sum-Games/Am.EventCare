@@ -14,7 +14,6 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as DetailsRouteImport } from './routes/details'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 
 const LogsRoute = LogsRouteImport.update({
   id: '/logs',
@@ -41,11 +40,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
-  id: '/demo/tanstack-query',
-  path: '/demo/tanstack-query',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -53,7 +47,6 @@ export interface FileRoutesByFullPath {
   '/details': typeof DetailsRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -61,7 +54,6 @@ export interface FileRoutesByTo {
   '/details': typeof DetailsRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -70,33 +62,13 @@ export interface FileRoutesById {
   '/details': typeof DetailsRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/analytics'
-    | '/details'
-    | '/login'
-    | '/logs'
-    | '/demo/tanstack-query'
+  fullPaths: '/' | '/analytics' | '/details' | '/login' | '/logs'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/analytics'
-    | '/details'
-    | '/login'
-    | '/logs'
-    | '/demo/tanstack-query'
-  id:
-    | '__root__'
-    | '/'
-    | '/analytics'
-    | '/details'
-    | '/login'
-    | '/logs'
-    | '/demo/tanstack-query'
+  to: '/' | '/analytics' | '/details' | '/login' | '/logs'
+  id: '__root__' | '/' | '/analytics' | '/details' | '/login' | '/logs'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -105,7 +77,6 @@ export interface RootRouteChildren {
   DetailsRoute: typeof DetailsRoute
   LoginRoute: typeof LoginRoute
   LogsRoute: typeof LogsRoute
-  DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -145,13 +116,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/demo/tanstack-query': {
-      id: '/demo/tanstack-query'
-      path: '/demo/tanstack-query'
-      fullPath: '/demo/tanstack-query'
-      preLoaderRoute: typeof DemoTanstackQueryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -161,7 +125,6 @@ const rootRouteChildren: RootRouteChildren = {
   DetailsRoute: DetailsRoute,
   LoginRoute: LoginRoute,
   LogsRoute: LogsRoute,
-  DemoTanstackQueryRoute: DemoTanstackQueryRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
