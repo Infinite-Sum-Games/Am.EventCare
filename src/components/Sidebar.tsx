@@ -1,11 +1,14 @@
 import { Link } from '@tanstack/react-router'
-import { Users, BarChart3, Activity, LogOut } from 'lucide-react'
+import { Users, Activity, LogOut } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
 
 export default function Sidebar() {
+    const { user, logout } = useAuth()
+
     return (
         <aside className="w-64 bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col h-screen sticky top-0">
             <div className="p-6 border-b border-sidebar-border">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold bg-linear-to-r from-primary to-orange-400 bg-clip-text text-transparent">
                     Anokha 2026
                 </h1>
                 <p className="text-xs text-muted-foreground mt-1">Hospitality Panel</p>
@@ -49,20 +52,17 @@ export default function Sidebar() {
             <div className="p-4 border-t border-sidebar-border">
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/20 to-orange-500/20 border border-primary/10 flex items-center justify-center text-primary font-bold shadow-inner">
-                            A
+                        <div className="h-10 w-10 rounded-full bg-linear-to-br from-primary/20 to-orange-500/20 border border-primary/10 flex items-center justify-center text-primary font-bold shadow-inner">
+                            {user?.name?.charAt(0).toUpperCase() || 'A'}
                         </div>
-                        <div>
-                            <p className="text-sm font-medium text-foreground">Admin</p>
-                            <p className="text-xs text-muted-foreground">admin@anokha.amrita.edu</p>
+                        <div className="overflow-hidden">
+                            <p className="text-sm font-medium text-foreground truncate">{user?.name || 'Admin'}</p>
+                            <p className="text-xs text-muted-foreground truncate">{user?.email || 'admin@anokha.amrita.edu'}</p>
                         </div>
                     </div>
 
                     <button
-                        onClick={() => {
-                            localStorage.removeItem("isAuthenticated");
-                            window.location.href = '/login';
-                        }}
+                        onClick={() => logout()}
                         className="w-full flex items-center justify-center gap-2 p-2 rounded-lg 
                                  text-xs font-medium text-muted-foreground
                                  bg-black/20 backdrop-blur-sm border border-transparent

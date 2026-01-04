@@ -1,10 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { getResponses } from '@/mocks/data'
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import {
     Building,
     School,
@@ -25,7 +24,8 @@ import {
     ChevronLeft,
     ChevronRight,
     ChevronsLeft,
-    ChevronsRight
+    ChevronsRight,
+    CalendarClock
 } from 'lucide-react'
 import {
     Select,
@@ -41,12 +41,75 @@ import {
     AlertDescription,
     AlertTitle,
 } from "@/components/ui/alert"
+import { axiosClient } from '@/lib/axios'
+import { api } from '@/lib/api'
+import { useAuth } from '@/context/AuthContext'
+import type { FormResponse } from '@/mocks/data'
 
 export const Route = createFileRoute('/details')({
     component: ResponsesPage,
 })
 
+// Helper Functions
+const formatTime = (timeInput: string) => {
+    if (!timeInput) return "";
+
+    // Extract HH:MM using regex to handle potential date prefixes or full timestamps
+    const matches = timeInput.match(/(\d{1,2}):(\d{2})/);
+    if (!matches) return timeInput;
+
+    const [_, h, m] = matches;
+    const hours = parseInt(h, 10);
+    const minutes = parseInt(m, 10);
+
+    if (isNaN(hours) || isNaN(minutes)) return "";
+
+    const suffix = hours >= 12 ? "PM" : "AM";
+    const hours12 = hours % 12 || 12;
+    return `${hours12.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${suffix}`;
+};
+
+const formatDate = (dateStr: string) => {
+    if (!dateStr) return "";
+    // Assuming ISO YYYY-MM-DD
+    const date = new Date(dateStr);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(-2);
+    // Custom formatted to DD-MM-YY as requested
+    // But user asked for "show in the exact same format seen in the app right now" INITIALLY 
+    // And THEN said "just that in format for showing date: use DD-MM-YY"
+    // So I will use DD-MM-YY
+    return `${day}-${month}-${year}`;
+};
+
+const calculateDuration = (inDate: string, outDate: string) => {
+    const start = new Date(inDate);
+    const end = new Date(outDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+};
+
+const toTitleCase = (str: string) => {
+    if (!str) return "";
+    return str.replace(
+        /\w\S*/g,
+        text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
+    );
+};
+
+
 function ResponsesPage() {
+    const { user, isLoading: isAuthLoading } = useAuth()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (!isAuthLoading && !user) {
+            navigate({ to: '/login' })
+        }
+    }, [user, isAuthLoading, navigate])
+
     const [search, setSearch] = useState("")
     const [hostelFilter, setHostelFilter] = useState("All hostels")
     const [genderFilter, setGenderFilter] = useState("All") // "All" | "Male" | "Female"
@@ -58,22 +121,32 @@ function ResponsesPage() {
     const ITEMS_PER_PAGE = 10
 
     const { data: responses, isLoading, error } = useQuery({
-        queryKey: ['responses'],
-        queryFn: getResponses,
+        queryKey: ['details'],
+        queryFn: async () => {
+            // Only fetch if authenticated
+            if (!user) return [];
+            const res = await axiosClient.get(api.GET_ALL_ACCOMODATION)
+            console.log(res)
+            return res.data.requests;
+        },
+        enabled: !!user // Disable query if no user
     })
 
     const filteredResponses = useMemo(() => {
         if (!responses) return [];
-        return responses.filter(r => {
+        return responses.filter((r: FormResponse) => {
             const matchesSearch =
-                r.fullName.toLowerCase().includes(search.toLowerCase()) ||
+                r.name.toLowerCase().includes(search.toLowerCase()) ||
                 r.email.toLowerCase().includes(search.toLowerCase());
 
             const matchesHostel = hostelFilter === "All hostels" || r.hostel === hostelFilter;
             // Strict gender filter if not All, otherwise loose
-            const matchesGender = genderFilter === "All" || r.gender === genderFilter;
-            const matchesCollege = collegeFilter === "All colleges" || r.college === collegeFilter;
-            const matchesPayment = paymentFilter === "All" || r.paymentStatus === paymentFilter;
+            const matchesGender = genderFilter === "All" || (genderFilter === "Male" ? r.is_male : !r.is_male);
+            // Case-insensitive / Normalized match for college
+            // collegeFilter is already Title Cased (from uniqueColleges options)
+            // So we normalize the data record's college name to match against it
+            const matchesCollege = collegeFilter === "All colleges" || toTitleCase(r.college_name) === collegeFilter;
+            const matchesPayment = paymentFilter === "All" || (paymentFilter === "Paid" ? r.is_paid : !r.is_paid);
 
             return matchesSearch && matchesHostel && matchesGender && matchesCollege && matchesPayment;
         });
@@ -91,10 +164,18 @@ function ResponsesPage() {
         setCurrentPage(1);
     }, [search, hostelFilter, genderFilter, collegeFilter, paymentFilter]);
 
-    // Extract unique colleges for filter
+    // Extract unique colleges for filter (Normalized to Title Case)
     const uniqueColleges = useMemo(() => {
-        if (!responses) return [];
-        return Array.from(new Set(responses.map(r => r.college))).sort();
+        if (!responses) return [] as string[];
+        return Array.from(new Set(responses.map((r: FormResponse) => toTitleCase(r.college_name)))).sort() as string[];
+    }, [responses]);
+
+    // Extract unique hostels for filter
+    const uniqueHostels = useMemo(() => {
+        if (!responses) return [] as string[];
+        return (Array.from(new Set(responses.map((r: any) => r.hostel as string))) as string[])
+            .filter((h) => h !== 'Not Assigned')
+            .sort();
     }, [responses]);
 
     // Active filter count for badge
@@ -193,7 +274,7 @@ function ResponsesPage() {
 
                             {/* College Dropdown */}
                             <Select value={collegeFilter} onValueChange={setCollegeFilter}>
-                                <SelectTrigger className="w-[275px] pl-9 relative bg-background/50 border-input">
+                                <SelectTrigger className="w-68.75 pl-9 relative bg-background/50 border-input">
                                     <School size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                                     <SelectValue placeholder="All colleges" />
                                 </SelectTrigger>
@@ -210,7 +291,7 @@ function ResponsesPage() {
 
                             {/* Hostel Dropdown */}
                             <Select value={hostelFilter} onValueChange={setHostelFilter}>
-                                <SelectTrigger className="w-[275px] pl-9 relative bg-background/50 border-input">
+                                <SelectTrigger className="w-68.75 pl-9 relative bg-background/50 border-input">
                                     <Building size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                                     <SelectValue placeholder="All hostels" />
                                 </SelectTrigger>
@@ -218,10 +299,9 @@ function ResponsesPage() {
                                     <SelectGroup>
                                         <SelectLabel>Hostels</SelectLabel>
                                         <SelectItem value="All hostels">All hostels</SelectItem>
-                                        <SelectItem value="A">Hostel A</SelectItem>
-                                        <SelectItem value="B">Hostel B</SelectItem>
-                                        <SelectItem value="C">Hostel C</SelectItem>
-                                        <SelectItem value="D">Hostel D</SelectItem>
+                                        {uniqueHostels.map(h => (
+                                            <SelectItem key={h} value={h}>{h}</SelectItem>
+                                        ))}
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
@@ -290,49 +370,47 @@ function ResponsesPage() {
                 </CardHeader>
                 <CardContent className="px-0 pt-0">
                     <div className="flex flex-col gap-2">
-                        {paginatedResponses.map(response => (
+                        {paginatedResponses.map((response: FormResponse) => (
                             <div key={response.id} className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
                                 {/* Card Flex */}
                                 <div className="flex flex-col lg:flex-row gap-6 lg:gap-0 items-stretch">
                                     {/* LEFT SECTION: BIO */}
-                                    <div className="flex-[2] min-w-[240px] flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-border/50 pb-6 lg:pb-0 lg:pr-3">
+                                    <div className="flex-2 min-w-60 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-border/50 pb-6 lg:pb-0 lg:pr-3">
                                         <div>
-                                            <h3 className="text-xl font-bold uppercase tracking-wide text-foreground">{response.fullName}</h3>
+                                            <h3 className="text-xl font-bold uppercase tracking-wide text-foreground">{response.name}</h3>
                                             <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
                                                 <Mail size={12} />
                                                 <span>{response.email}</span>
                                                 <span className="text-border">|</span>
                                                 <Phone size={12} />
-                                                <span>{response.phone}</span>
+                                                <span>{response.phone_number}</span>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-3 mt-4">
                                             {/* Gender */}
                                             <div className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-input bg-muted/20">
-                                                {response.gender === 'Male' ? (
+                                                {response.is_male ? (
                                                     <Mars size={14} className="text-muted-foreground" />
-                                                ) : response.gender === 'Female' ? (
-                                                    <Venus size={14} className="text-muted-foreground" />
                                                 ) : (
-                                                    <User size={14} className="text-muted-foreground" />
+                                                    <Venus size={14} className="text-muted-foreground" />
                                                 )}
-                                                <span className="text-sm font-medium uppercase">{response.gender}</span>
+                                                <span className="text-sm font-medium uppercase">{response.is_male ? "Male" : "Female"}</span>
                                             </div>
                                             {/* Payment */}
-                                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md border ${response.paymentStatus === 'Paid' ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-500' : 'border-red-500/20 bg-red-500/5 text-red-400'}`}>
-                                                {response.paymentStatus === 'Paid' ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
-                                                <span className="text-sm font-bold uppercase">{response.paymentStatus}</span>
+                                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md border ${response.is_paid ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-500' : 'border-red-500/20 bg-red-500/5 text-red-400'}`}>
+                                                {response.is_paid ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
+                                                <span className="text-sm font-bold uppercase">{response.is_paid ? "Paid" : "Pending"}</span>
                                             </div>
                                             {/* Status - Moved from Section 2 */}
                                             <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md border 
-                                                ${response.checkInStatus === 'Checked In' ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-600' : ''}
-                                                ${response.checkInStatus === 'Reserved' ? 'border-amber-500/30 bg-amber-500/5 text-amber-600' : ''}
-                                                ${response.checkInStatus === 'Checked Out' ? 'border-red-500/20 bg-red-500/5 text-red-400' : ''}
+                                                ${response.check_in_status === 'IN' ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-600' : ''}
+                                                ${response.check_in_status === 'RESERVED' ? 'border-amber-500/30 bg-amber-500/5 text-amber-600' : ''}
+                                                ${response.check_in_status === 'OUT' ? 'border-red-500/20 bg-red-500/5 text-red-400' : ''}
                                              `}>
-                                                {response.checkInStatus === 'Checked In' && <CheckCircle2 size={14} />}
-                                                {response.checkInStatus === 'Reserved' && <Clock size={14} />}
-                                                {response.checkInStatus === 'Checked Out' && <LogOut size={14} />}
-                                                <span className="text-sm font-bold uppercase">{response.checkInStatus}</span>
+                                                {response.check_in_status === 'IN' && <CheckCircle2 size={14} />}
+                                                {response.check_in_status === 'RESERVED' && <Clock size={14} />}
+                                                {response.check_in_status === 'OUT' && <LogOut size={14} />}
+                                                <span className="text-sm font-bold uppercase">{response.check_in_status}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -340,16 +418,25 @@ function ResponsesPage() {
                                     {/* MIDDLE SECTION: DETAILS */}
                                     <div className="flex-[1.5] flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-border/50 pb-6 lg:pb-0 lg:pr-6 lg:pl-3">
                                         <div>
-                                            <p className="text-sm font-bold text-foreground uppercase tracking-wide mb-1 line-clamp-1" title={response.college}>{response.college}</p>
-                                            <p className="font-mono text-sm text-amber-600/90">{response.rollNumber}</p>
+                                            <p className="text-sm font-bold text-foreground uppercase tracking-wide mb-1 line-clamp-1" title={response.college_name}>{response.college_name}</p>
+                                            <p className="font-mono text-sm text-amber-600/90">{response.college_roll_number}</p>
                                         </div>
                                         <div className="flex flex-wrap items-center gap-4 mt-4">
                                             {/* Hostel */}
-                                            <div className={`flex-1 min-w-[140px] flex items-center gap-3 p-2 rounded-lg border ${response.hostel !== 'Not Assigned' ? 'border-border bg-card' : 'border-red-500/20 bg-red-500/5 text-red-400'}`}>
+                                            <div className={`flex-1 min-w-35 flex items-center gap-3 p-2 rounded-lg border ${response.hostel !== 'Not Assigned' ? 'border-border bg-card' : 'border-red-500/20 bg-red-500/5 text-red-400'}`}>
                                                 <Home size={18} className="opacity-70" />
                                                 <div>
                                                     <p className="text-[10px] uppercase text-muted-foreground font-semibold">Hostel</p>
-                                                    <p className="font-medium text-sm truncate">{response.hostel === 'Not Assigned' ? 'Not Assigned' : `Hostel ${response.hostel}`}</p>
+                                                    <p className="font-medium text-sm truncate">{response.hostel === 'Not Assigned' ? 'Not Assigned' : `${response.hostel}`}</p>
+                                                </div>
+                                            </div>
+
+                                            {/* Duration (Calculated) */}
+                                            <div className="flex-1 min-w-35 flex items-center gap-3 p-2 rounded-lg border border-border bg-card">
+                                                <CalendarClock size={18} className="opacity-70" />
+                                                <div>
+                                                    <p className="text-[10px] uppercase text-muted-foreground font-semibold">Duration</p>
+                                                    <p className="font-medium text-sm truncate">{calculateDuration(response.check_in_date, response.check_out_date)} Days</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -358,28 +445,32 @@ function ResponsesPage() {
                                     {/* RIGHT SECTION: DATES */}
                                     <div className="flex-none flex gap-3 lg:pl-6 items-center justify-end">
                                         {/* Check In */}
-                                        <div className={`w-32 border border-border rounded-xl p-3 flex flex-col items-center justify-center gap-1 min-h-[90px] relative overflow-hidden group/date 
-                                            ${response.checkInStatus === 'Checked In' ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-500' : 'bg-card'}`}>
+                                        <div className={`w-32 border border-border rounded-xl p-3 flex flex-col items-center justify-center gap-1 min-h-22.5 relative overflow-hidden group/date 
+                                            ${response.check_in_status === 'IN' ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-500' : 'bg-card'}`}>
                                             <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
                                                 <LogIn size={12} />
                                                 <span className="text-[10px] uppercase font-bold">Check In</span>
                                             </div>
-                                            <div className={`text-xl font-bold ${response.checkInStatus === 'Checked In' ? 'text-emerald-500' : 'text-foreground'}`}>{response.checkInDate}</div>
+                                            <div className={`text-xl font-bold ${response.check_in_status === 'IN' ? 'text-emerald-500' : 'text-foreground'}`}>
+                                                {formatDate(response.check_in_date)}
+                                            </div>
                                             <div className="mt-1 text-[10px] font-mono bg-muted/50 rounded px-1.5 py-0.5">
-                                                {response.checkInTime}
+                                                {formatTime(response.check_in_time)}
                                             </div>
                                         </div>
 
                                         {/* Check Out */}
-                                        <div className={`w-32 border border-border rounded-xl p-3 flex flex-col items-center justify-center gap-1 min-h-[90px] relative overflow-hidden group/date
-                                            ${response.checkInStatus === 'Checked Out' ? 'border-red-500/30 bg-red-500/10 text-red-500' : 'bg-card'}`}>
+                                        <div className={`w-32 border border-border rounded-xl p-3 flex flex-col items-center justify-center gap-1 min-h-22.5 relative overflow-hidden group/date
+                                            ${response.check_in_status === 'OUT' ? 'border-red-500/30 bg-red-500/10 text-red-500' : 'bg-card'}`}>
                                             <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
                                                 <LogOut size={12} />
                                                 <span className="text-[10px] uppercase font-bold">Check Out</span>
                                             </div>
-                                            <div className={`text-xl font-bold ${response.checkInStatus === 'Checked Out' ? 'text-red-500' : 'text-foreground'}`}>{response.checkOutDate}</div>
+                                            <div className={`text-xl font-bold ${response.check_in_status === 'OUT' ? 'text-red-500' : 'text-foreground'}`}>
+                                                {formatDate(response.check_out_date)}
+                                            </div>
                                             <div className="mt-1 text-[10px] font-mono bg-muted/50 rounded px-1.5 py-0.5">
-                                                {response.checkOutTime}
+                                                {formatTime(response.check_out_time)}
                                             </div>
                                         </div>
                                     </div>
@@ -391,7 +482,7 @@ function ResponsesPage() {
                                 <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                                     <User size={32} className="text-muted-foreground opacity-50" />
                                 </div>
-                                <h3 className="text-lg font-medium text-foreground">No bookings found</h3>
+                                <h3 className="text-lg font-medium text-foreground">No responses found</h3>
                                 <p className="text-muted-foreground mt-1">Try adjusting your filters to find what you're looking for.</p>
                             </div>
                         )}
