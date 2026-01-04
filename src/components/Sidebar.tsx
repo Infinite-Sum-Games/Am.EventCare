@@ -8,7 +8,7 @@ export default function Sidebar() {
     return (
         <aside className="w-64 bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col h-screen sticky top-0">
             <div className="p-6 border-b border-sidebar-border">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold bg-linear-to-r from-primary to-orange-400 bg-clip-text text-transparent">
                     Anokha 2026
                 </h1>
                 <p className="text-xs text-muted-foreground mt-1">Hospitality Panel</p>
@@ -52,7 +52,7 @@ export default function Sidebar() {
             <div className="p-4 border-t border-sidebar-border">
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/20 to-orange-500/20 border border-primary/10 flex items-center justify-center text-primary font-bold shadow-inner">
+                        <div className="h-10 w-10 rounded-full bg-linear-to-br from-primary/20 to-orange-500/20 border border-primary/10 flex items-center justify-center text-primary font-bold shadow-inner">
                             {user?.name?.charAt(0).toUpperCase() || 'A'}
                         </div>
                         <div className="overflow-hidden">

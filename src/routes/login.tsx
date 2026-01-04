@@ -68,15 +68,15 @@ function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
       {/* Grid Background */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] bg-size-[24px_24px]"></div>
 
       {/* Background Effects */}
-      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-3xl transition-all animate-pulse pointer-events-none" />
+      <div className="absolute top-[-20%] left-[-10%] w-125 h-125 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-125 h-125 bg-blue-600/10 rounded-full blur-3xl transition-all animate-pulse pointer-events-none" />
 
       <Card className="w-full max-w-md bg-card/80 backdrop-blur-md border-border shadow-2xl z-10 relative">
         <CardHeader className="text-center space-y-2">
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
+          <CardTitle className="text-3xl font-bold bg-linear-to-r from-primary to-orange-400 bg-clip-text text-transparent">
             Anokha 2026
           </CardTitle>
           <CardDescription className="text-muted-foreground">

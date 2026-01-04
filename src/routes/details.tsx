@@ -44,6 +44,7 @@ import {
 import { axiosClient } from '@/lib/axios'
 import { api } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
+import type { FormResponse } from '@/mocks/data'
 
 export const Route = createFileRoute('/details')({
     component: ResponsesPage,
@@ -133,7 +134,7 @@ function ResponsesPage() {
 
     const filteredResponses = useMemo(() => {
         if (!responses) return [];
-        return responses.filter(r => {
+        return responses.filter((r: FormResponse) => {
             const matchesSearch =
                 r.name.toLowerCase().includes(search.toLowerCase()) ||
                 r.email.toLowerCase().includes(search.toLowerCase());
@@ -165,8 +166,8 @@ function ResponsesPage() {
 
     // Extract unique colleges for filter (Normalized to Title Case)
     const uniqueColleges = useMemo(() => {
-        if (!responses) return [];
-        return Array.from(new Set(responses.map(r => toTitleCase(r.college_name)))).sort();
+        if (!responses) return [] as string[];
+        return Array.from(new Set(responses.map((r: FormResponse) => toTitleCase(r.college_name)))).sort() as string[];
     }, [responses]);
 
     // Extract unique hostels for filter
@@ -273,7 +274,7 @@ function ResponsesPage() {
 
                             {/* College Dropdown */}
                             <Select value={collegeFilter} onValueChange={setCollegeFilter}>
-                                <SelectTrigger className="w-[275px] pl-9 relative bg-background/50 border-input">
+                                <SelectTrigger className="w-68.75 pl-9 relative bg-background/50 border-input">
                                     <School size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                                     <SelectValue placeholder="All colleges" />
                                 </SelectTrigger>
@@ -290,7 +291,7 @@ function ResponsesPage() {
 
                             {/* Hostel Dropdown */}
                             <Select value={hostelFilter} onValueChange={setHostelFilter}>
-                                <SelectTrigger className="w-[275px] pl-9 relative bg-background/50 border-input">
+                                <SelectTrigger className="w-68.75 pl-9 relative bg-background/50 border-input">
                                     <Building size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                                     <SelectValue placeholder="All hostels" />
                                 </SelectTrigger>
@@ -369,12 +370,12 @@ function ResponsesPage() {
                 </CardHeader>
                 <CardContent className="px-0 pt-0">
                     <div className="flex flex-col gap-2">
-                        {paginatedResponses.map(response => (
+                        {paginatedResponses.map((response: FormResponse) => (
                             <div key={response.id} className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group">
                                 {/* Card Flex */}
                                 <div className="flex flex-col lg:flex-row gap-6 lg:gap-0 items-stretch">
                                     {/* LEFT SECTION: BIO */}
-                                    <div className="flex-[2] min-w-[240px] flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-border/50 pb-6 lg:pb-0 lg:pr-3">
+                                    <div className="flex-2 min-w-60 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-border/50 pb-6 lg:pb-0 lg:pr-3">
                                         <div>
                                             <h3 className="text-xl font-bold uppercase tracking-wide text-foreground">{response.name}</h3>
                                             <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
@@ -422,7 +423,7 @@ function ResponsesPage() {
                                         </div>
                                         <div className="flex flex-wrap items-center gap-4 mt-4">
                                             {/* Hostel */}
-                                            <div className={`flex-1 min-w-[140px] flex items-center gap-3 p-2 rounded-lg border ${response.hostel !== 'Not Assigned' ? 'border-border bg-card' : 'border-red-500/20 bg-red-500/5 text-red-400'}`}>
+                                            <div className={`flex-1 min-w-35 flex items-center gap-3 p-2 rounded-lg border ${response.hostel !== 'Not Assigned' ? 'border-border bg-card' : 'border-red-500/20 bg-red-500/5 text-red-400'}`}>
                                                 <Home size={18} className="opacity-70" />
                                                 <div>
                                                     <p className="text-[10px] uppercase text-muted-foreground font-semibold">Hostel</p>
@@ -431,7 +432,7 @@ function ResponsesPage() {
                                             </div>
 
                                             {/* Duration (Calculated) */}
-                                            <div className="flex-1 min-w-[140px] flex items-center gap-3 p-2 rounded-lg border border-border bg-card">
+                                            <div className="flex-1 min-w-35 flex items-center gap-3 p-2 rounded-lg border border-border bg-card">
                                                 <CalendarClock size={18} className="opacity-70" />
                                                 <div>
                                                     <p className="text-[10px] uppercase text-muted-foreground font-semibold">Duration</p>
@@ -444,7 +445,7 @@ function ResponsesPage() {
                                     {/* RIGHT SECTION: DATES */}
                                     <div className="flex-none flex gap-3 lg:pl-6 items-center justify-end">
                                         {/* Check In */}
-                                        <div className={`w-32 border border-border rounded-xl p-3 flex flex-col items-center justify-center gap-1 min-h-[90px] relative overflow-hidden group/date 
+                                        <div className={`w-32 border border-border rounded-xl p-3 flex flex-col items-center justify-center gap-1 min-h-22.5 relative overflow-hidden group/date 
                                             ${response.check_in_status === 'IN' ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-500' : 'bg-card'}`}>
                                             <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
                                                 <LogIn size={12} />
@@ -459,7 +460,7 @@ function ResponsesPage() {
                                         </div>
 
                                         {/* Check Out */}
-                                        <div className={`w-32 border border-border rounded-xl p-3 flex flex-col items-center justify-center gap-1 min-h-[90px] relative overflow-hidden group/date
+                                        <div className={`w-32 border border-border rounded-xl p-3 flex flex-col items-center justify-center gap-1 min-h-22.5 relative overflow-hidden group/date
                                             ${response.check_in_status === 'OUT' ? 'border-red-500/30 bg-red-500/10 text-red-500' : 'bg-card'}`}>
                                             <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
                                                 <LogOut size={12} />
@@ -481,7 +482,7 @@ function ResponsesPage() {
                                 <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                                     <User size={32} className="text-muted-foreground opacity-50" />
                                 </div>
-                                <h3 className="text-lg font-medium text-foreground">No bookings found</h3>
+                                <h3 className="text-lg font-medium text-foreground">No responses found</h3>
                                 <p className="text-muted-foreground mt-1">Try adjusting your filters to find what you're looking for.</p>
                             </div>
                         )}
