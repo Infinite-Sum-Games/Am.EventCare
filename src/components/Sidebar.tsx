@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { Users, Activity, LogOut, Hotel } from 'lucide-react'
-import { Users, Activity, LogOut, Clock } from 'lucide-react'
+import { Clock } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 
 export default function Sidebar() {
