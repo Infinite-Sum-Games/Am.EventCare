@@ -10,7 +10,7 @@ import { fileURLToPath, URL } from 'node:url'
 export default defineConfig({
   base: '/room/',
   server: {
-    port: 3000,
+    port: 4174,
     proxy: {
       '/api/v1': {
         target: 'http://localhost:9000',
