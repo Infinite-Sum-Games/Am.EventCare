@@ -1,7 +1,7 @@
 import { serve } from "bun";
 
 const DIST = "dist";
-const BASE = "/hospitality";
+const BASE = "/room";
 
 serve({
         port: 4174,
