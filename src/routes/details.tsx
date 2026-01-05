@@ -137,7 +137,8 @@ function ResponsesPage() {
         return responses.filter((r: FormResponse) => {
             const matchesSearch =
                 r.name.toLowerCase().includes(search.toLowerCase()) ||
-                r.email.toLowerCase().includes(search.toLowerCase());
+                r.email.toLowerCase().includes(search.toLowerCase()) ||
+                (r.phone_number && r.phone_number.includes(search));
 
             const matchesHostel = hostelFilter === "All hostels" || r.hostel === hostelFilter;
             // Strict gender filter if not All, otherwise loose
@@ -225,7 +226,7 @@ function ResponsesPage() {
                         <div className="max-w-md relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
                             <Input
-                                placeholder="Search by name or email..."
+                                placeholder="Search by name, email, or phone..."
                                 className="pl-9 bg-background border-input text-foreground focus-visible:ring-ring"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}

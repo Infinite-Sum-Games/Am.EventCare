@@ -26,7 +26,7 @@ export default function Sidebar() {
                     <span>Accommodation</span>
                 </Link>
 
-                {/* <Link
+                <Link
                     to="/logs"
                     className="flex items-center gap-3 p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
                     activeProps={{
@@ -35,7 +35,7 @@ export default function Sidebar() {
                 >
                     <Activity size={20} />
                     <span>Logs</span>
-                </Link> */}
+                </Link>
 
                 {/* <Link
                     to="/analytics"
