@@ -22,7 +22,7 @@ const router = createRouter({
   scrollRestoration: true,
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
-  basepath: '/hospitality',
+  basepath: '/room/',
 })
 
 // Register the router instance for type safety
