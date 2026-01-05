@@ -1,4 +1,3 @@
-import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
@@ -37,15 +36,6 @@ function HostelComponent() {
             return response.data.hostels;
         }
     });
-
-    const mock = [
-        {hostel_id: '1', hostel_name: 'ALPHA BHAVANAM - SINGLE', is_male: true, 
-        warden_email: '123@example.com',
-        room_count: 50, day_scholar_price: 100, outsider_price: 200},
-        {hostel_id: '2', hostel_name: 'BETA BHAVANAM - DORM', is_male: false, 
-        warden_email: '456@example.com',
-        room_count: 30, day_scholar_price: 150, outsider_price: 250},
-    ]
 
     // 2. Create Hostel Mutation
     const { mutate: createHostel, isPending: isCreatingHostel } = useMutation({
@@ -113,20 +103,32 @@ function HostelComponent() {
                 )}
 
                 {hostelsError && (
-                    <Alert variant="destructive">
-                        <p>Failed to load hostels. Please try again later.</p>
-                    </Alert>
+                    <div className="p-4 rounded-lg border border-destructive/50 bg-destructive/10">
+                        <p className="text-sm text-destructive">
+                            {hostelsError instanceof Error ? hostelsError.message : 'Failed to load hostels. Please try again later.'}
+                        </p>
+                    </div>
+                )}
+
+                {!hostels && !isLoadingHostels && (
+                    <div className="p-4 rounded-lg border">
+                        <p className="text-sm">
+                            No hostels found. Click on "Add New Hostel" to create one.
+                        </p>
+                    </div>
                 )}
 
                 {hostels && hostels.length === 0 && !isLoadingHostels && (
-                    <Alert>
-                        <p>No hostels found. Please add a hostel to get started.</p>
-                    </Alert>
+                    <div className="p-4 rounded-lg border">
+                        <p className="text-sm">
+                            No hostels found. Click on "Add New Hostel" to create one.
+                        </p>
+                    </div>
                 )}
 
                 {hostels && hostels.length > 0 && (
                     <div className="flex flex-col gap-4">
-                        {mock.map((hostel: CreateHostel) => (
+                        {hostels.map((hostel: CreateHostel) => (
                             <Card key={hostel.hostel_id} className="border p-4 rounded-lg overflow-hidden">
                                 <CardContent className='px-2 flex flex-col lg:flex-row justify-between items-center gap-6'>
                                     {/* Left Section: Info & Gender Icon */}
