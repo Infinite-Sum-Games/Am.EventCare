@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PendingAllotmentsRouteImport } from './routes/pending-allotments'
 import { Route as LogsRouteImport } from './routes/logs'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HostelsRouteImport } from './routes/hostels'
@@ -16,6 +17,11 @@ import { Route as DetailsRouteImport } from './routes/details'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
 
+const PendingAllotmentsRoute = PendingAllotmentsRouteImport.update({
+  id: '/pending-allotments',
+  path: '/pending-allotments',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LogsRoute = LogsRouteImport.update({
   id: '/logs',
   path: '/logs',
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/hostels': typeof HostelsRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
+  '/pending-allotments': typeof PendingAllotmentsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/hostels': typeof HostelsRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
+  '/pending-allotments': typeof PendingAllotmentsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,20 +79,33 @@ export interface FileRoutesById {
   '/hostels': typeof HostelsRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
+  '/pending-allotments': typeof PendingAllotmentsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/analytics' | '/details' | '/hostels' | '/login' | '/logs'
+  fullPaths:
+    | '/'
+    | '/analytics'
+    | '/details'
+    | '/login'
+    | '/logs'
+    | '/pending-allotments'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/analytics' | '/details' | '/hostels' | '/login' | '/logs'
+  to:
+    | '/'
+    | '/analytics'
+    | '/details'
+    | '/login'
+    | '/logs'
+    | '/pending-allotments'
   id:
     | '__root__'
     | '/'
     | '/analytics'
     | '/details'
-    | '/hostels'
     | '/login'
     | '/logs'
+    | '/pending-allotments'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -94,10 +115,18 @@ export interface RootRouteChildren {
   HostelsRoute: typeof HostelsRoute
   LoginRoute: typeof LoginRoute
   LogsRoute: typeof LogsRoute
+  PendingAllotmentsRoute: typeof PendingAllotmentsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/pending-allotments': {
+      id: '/pending-allotments'
+      path: '/pending-allotments'
+      fullPath: '/pending-allotments'
+      preLoaderRoute: typeof PendingAllotmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/logs': {
       id: '/logs'
       path: '/logs'
@@ -150,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   HostelsRoute: HostelsRoute,
   LoginRoute: LoginRoute,
   LogsRoute: LogsRoute,
+  PendingAllotmentsRoute: PendingAllotmentsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

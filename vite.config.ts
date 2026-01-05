@@ -8,9 +8,16 @@ import { fileURLToPath, URL } from 'node:url'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/hospitality/',
+  base: '/room/',
   server: {
     port: 3000,
+    proxy: {
+      '/api/v1': {
+        target: 'http://localhost:9000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   plugins: [
     devtools(),

@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button"
 import { useState, useMemo, useEffect } from 'react'
 import {
     Building,
+    Bed,
     School,
     CircleX,
     User,
+    Users,
     CheckCircle2,
     AlertCircle,
     Home,
@@ -101,7 +103,7 @@ const toTitleCase = (str: string) => {
 
 
 function ResponsesPage() {
-    const { user, isLoading: isAuthLoading } = useAuth()
+    const { user, isLoading: isAuthLoading, isFetching: isAuthFetching } = useAuth()
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -129,7 +131,7 @@ function ResponsesPage() {
             console.log(res)
             return res.data.requests;
         },
-        enabled: !!user // Disable query if no user
+        enabled: !!user && !isAuthFetching // Disable query if no user or checking session
     })
 
     const filteredResponses = useMemo(() => {
@@ -137,7 +139,8 @@ function ResponsesPage() {
         return responses.filter((r: FormResponse) => {
             const matchesSearch =
                 r.name.toLowerCase().includes(search.toLowerCase()) ||
-                r.email.toLowerCase().includes(search.toLowerCase());
+                r.email.toLowerCase().includes(search.toLowerCase()) ||
+                (r.phone_number && r.phone_number.includes(search));
 
             const matchesHostel = hostelFilter === "All hostels" || r.hostel === hostelFilter;
             // Strict gender filter if not All, otherwise loose
@@ -208,7 +211,10 @@ function ResponsesPage() {
         <div className="p-6 space-y-6 min-h-screen bg-background text-foreground font-sans animate-in fade-in duration-500">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Accommodation</h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
+                        <Users className="text-amber-500" />
+                        Accommodation
+                    </h1>
                     <p className="text-muted-foreground mt-1">Manage registration and accommodation details.</p>
                 </div>
                 <div className="bg-card border border-border rounded-lg px-4 py-2 text-sm text-muted-foreground shadow-sm">
@@ -225,7 +231,7 @@ function ResponsesPage() {
                         <div className="max-w-md relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
                             <Input
-                                placeholder="Search by name or email..."
+                                placeholder="Search by name, email, or phone..."
                                 className="pl-9 bg-background border-input text-foreground focus-visible:ring-ring"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}

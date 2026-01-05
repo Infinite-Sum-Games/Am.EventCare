@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { Users, Activity, LogOut, Hotel } from 'lucide-react'
+import { Users, Activity, LogOut, Clock } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 
 export default function Sidebar() {
@@ -39,6 +40,7 @@ export default function Sidebar() {
 
                 <Link
                     to="/hostels"
+                    to="/pending-allotments"
                     className="flex items-center gap-3 p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
                     activeProps={{
                         className: 'flex items-center gap-3 p-3 rounded-lg bg-amber-500/10 backdrop-blur-md border border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)] text-amber-500 font-medium'
@@ -46,6 +48,8 @@ export default function Sidebar() {
                 >
                     <Hotel size={20} />
                     <span>Hostels</span>
+                    <Clock size={20} />
+                    <span>Pending Allotments</span>
                 </Link>
 
                 {/* <Link
@@ -76,9 +80,8 @@ export default function Sidebar() {
                         onClick={() => logout()}
                         className="w-full flex items-center justify-center gap-2 p-2 rounded-lg 
                                  text-xs font-medium text-muted-foreground
-                                 bg-black/20 backdrop-blur-sm border border-transparent
-                                 hover:bg-black/40 hover:text-red-400 hover:border-red-500/30 
-                                 hover:shadow-[0_0_15px_rgba(220,38,38,0.15)]
+                                 bg-black/20 backdrop-blur-sm border border-amber-500/30
+                                 hover:bg-amber-500/10 hover:text-amber-500 hover:border-amber-500 
                                  transition-all duration-300 group"
                     >
                         <LogOut size={14} className="group-hover:scale-105 transition-transform" />
