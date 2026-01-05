@@ -40,7 +40,6 @@ export default function Sidebar() {
 
                 <Link
                     to="/hostels"
-                    to="/pending-allotments"
                     className="flex items-center gap-3 p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
                     activeProps={{
                         className: 'flex items-center gap-3 p-3 rounded-lg bg-amber-500/10 backdrop-blur-md border border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)] text-amber-500 font-medium'
@@ -48,6 +47,15 @@ export default function Sidebar() {
                 >
                     <Hotel size={20} />
                     <span>Hostels</span>
+                </Link>
+
+                <Link
+                    to="/pending-allotments"
+                    className="flex items-center gap-3 p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
+                    activeProps={{
+                        className: 'flex items-center gap-3 p-3 rounded-lg bg-amber-500/10 backdrop-blur-md border border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)] text-amber-500 font-medium'
+                    }}
+                >
                     <Clock size={20} />
                     <span>Pending Allotments</span>
                 </Link>
