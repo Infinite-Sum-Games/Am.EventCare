@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PendingAllotmentsRouteImport } from './routes/pending-allotments'
 import { Route as LogsRouteImport } from './routes/logs'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as HostelsRouteImport } from './routes/hostels'
 import { Route as DetailsRouteImport } from './routes/details'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
@@ -29,6 +30,11 @@ const LogsRoute = LogsRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HostelsRoute = HostelsRouteImport.update({
+  id: '/hostels',
+  path: '/hostels',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DetailsRoute = DetailsRouteImport.update({
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/details': typeof DetailsRoute
+  '/hostels': typeof HostelsRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
   '/pending-allotments': typeof PendingAllotmentsRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/details': typeof DetailsRoute
+  '/hostels': typeof HostelsRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
   '/pending-allotments': typeof PendingAllotmentsRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/details': typeof DetailsRoute
+  '/hostels': typeof HostelsRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
   '/pending-allotments': typeof PendingAllotmentsRoute
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/details'
+    | '/hostels'
     | '/login'
     | '/logs'
     | '/pending-allotments'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/details'
+    | '/hostels'
     | '/login'
     | '/logs'
     | '/pending-allotments'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/analytics'
     | '/details'
+    | '/hostels'
     | '/login'
     | '/logs'
     | '/pending-allotments'
@@ -103,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnalyticsRoute: typeof AnalyticsRoute
   DetailsRoute: typeof DetailsRoute
+  HostelsRoute: typeof HostelsRoute
   LoginRoute: typeof LoginRoute
   LogsRoute: typeof LogsRoute
   PendingAllotmentsRoute: typeof PendingAllotmentsRoute
@@ -129,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hostels': {
+      id: '/hostels'
+      path: '/hostels'
+      fullPath: '/hostels'
+      preLoaderRoute: typeof HostelsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/details': {
@@ -159,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnalyticsRoute: AnalyticsRoute,
   DetailsRoute: DetailsRoute,
+  HostelsRoute: HostelsRoute,
   LoginRoute: LoginRoute,
   LogsRoute: LogsRoute,
   PendingAllotmentsRoute: PendingAllotmentsRoute,

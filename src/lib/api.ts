@@ -6,6 +6,11 @@ export const api = {
     LOGOUT: `/accommodation/panel/logout`,
     SESSION: `/accommodation/panel/session`,
 
+    // hostel routes
+    GET_ALL_HOSTELS: `accommodation/panel/hostel`,
+    ADD_HOSTEL: `/accommodation/panel/hostel`,
+    UPDATE_HOSTEL: `/accommodation/panel/hostel`,
+    DELETE_HOSTEL: (id: string) => `/accommodation/panel/hostel/${id}`,
     GET_UNCLAIMED_BEDS: `/accommodation/panel/beds/unclaimed`,
     DELETE_UNCLAIMED_BED: (bedId: string) => `/accommodation/panel/beds/unclaimed/${bedId}`,
 
