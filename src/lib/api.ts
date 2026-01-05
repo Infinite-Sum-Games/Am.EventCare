@@ -7,7 +7,7 @@ export const api = {
     SESSION: `/accommodation/panel/session`,
 
     // hostel routes
-    GET_ALL_HOSTELS: `accommodation/app/hostels`,
+    GET_ALL_HOSTELS: `accommodation/panel/hostel`,
     ADD_HOSTEL: `/accommodation/panel/hostel`,
     UPDATE_HOSTEL: `/accommodation/panel/hostel`,
     DELETE_HOSTEL: (id: string) => `/accommodation/panel/hostel/${id}`,
