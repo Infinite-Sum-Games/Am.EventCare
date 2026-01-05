@@ -10,7 +10,14 @@ import { fileURLToPath, URL } from 'node:url'
 export default defineConfig({
   base: '/room/',
   server: {
-    port: 4174,
+    port: 3000,
+    proxy: {
+      '/api/v1': {
+        target: 'http://localhost:9000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   plugins: [
     devtools(),

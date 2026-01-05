@@ -5,4 +5,10 @@ export const api = {
 
     LOGOUT: `/accommodation/panel/logout`,
     SESSION: `/accommodation/panel/session`,
+
+    GET_UNCLAIMED_BEDS: `/accommodation/panel/beds/unclaimed`,
+    DELETE_UNCLAIMED_BED: (bedId: string) => `/accommodation/panel/beds/unclaimed/${bedId}`,
+
+    GET_GATE_LOGS: '/accommodation/panel/gate/logs',
+    GET_HOSTEL_LOGS: '/accommodation/panel/hostel/logs'
 }
