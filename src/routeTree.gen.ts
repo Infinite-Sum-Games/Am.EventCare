@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PendingAllotmentsRouteImport } from './routes/pending-allotments'
 import { Route as LogsRouteImport } from './routes/logs'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DetailsRouteImport } from './routes/details'
@@ -16,6 +17,11 @@ import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 
+const PendingAllotmentsRoute = PendingAllotmentsRouteImport.update({
+  id: '/pending-allotments',
+  path: '/pending-allotments',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LogsRoute = LogsRouteImport.update({
   id: '/logs',
   path: '/logs',
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/details': typeof DetailsRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
+  '/pending-allotments': typeof PendingAllotmentsRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/details': typeof DetailsRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
+  '/pending-allotments': typeof PendingAllotmentsRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
 }
 export interface FileRoutesById {
@@ -70,6 +78,7 @@ export interface FileRoutesById {
   '/details': typeof DetailsRoute
   '/login': typeof LoginRoute
   '/logs': typeof LogsRoute
+  '/pending-allotments': typeof PendingAllotmentsRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
 }
 export interface FileRouteTypes {
@@ -80,6 +89,7 @@ export interface FileRouteTypes {
     | '/details'
     | '/login'
     | '/logs'
+    | '/pending-allotments'
     | '/demo/tanstack-query'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -88,6 +98,7 @@ export interface FileRouteTypes {
     | '/details'
     | '/login'
     | '/logs'
+    | '/pending-allotments'
     | '/demo/tanstack-query'
   id:
     | '__root__'
@@ -96,6 +107,7 @@ export interface FileRouteTypes {
     | '/details'
     | '/login'
     | '/logs'
+    | '/pending-allotments'
     | '/demo/tanstack-query'
   fileRoutesById: FileRoutesById
 }
@@ -105,11 +117,19 @@ export interface RootRouteChildren {
   DetailsRoute: typeof DetailsRoute
   LoginRoute: typeof LoginRoute
   LogsRoute: typeof LogsRoute
+  PendingAllotmentsRoute: typeof PendingAllotmentsRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/pending-allotments': {
+      id: '/pending-allotments'
+      path: '/pending-allotments'
+      fullPath: '/pending-allotments'
+      preLoaderRoute: typeof PendingAllotmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/logs': {
       id: '/logs'
       path: '/logs'
@@ -161,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   DetailsRoute: DetailsRoute,
   LoginRoute: LoginRoute,
   LogsRoute: LogsRoute,
+  PendingAllotmentsRoute: PendingAllotmentsRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
 }
 export const routeTree = rootRouteImport

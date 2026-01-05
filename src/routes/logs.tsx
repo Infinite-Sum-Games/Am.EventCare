@@ -27,7 +27,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { mockGateLogs, mockHostelLogs } from '@/mocks/mockLogs'
+import { useQuery } from '@tanstack/react-query'
+import { api } from '@/lib/api'
+import { axiosClient } from '@/lib/axios'
+import type { GateLog, HostelLog } from '@/mocks/mockLogs'
 
 export const Route = createFileRoute('/logs')({
     component: LogsPage,
@@ -68,16 +71,41 @@ function LogsPage() {
     const [directionFilter, setDirectionFilter] = useState<'All' | 'IN' | 'OUT'>("All")
     const [collegeFilter, setCollegeFilter] = useState("All colleges")
 
+    // Data Fetching
+    const { data: gateLogs = [] } = useQuery<GateLog[]>({
+        queryKey: ['gate-logs'],
+        queryFn: async () => {
+            const res = await axiosClient.get(api.GET_GATE_LOGS)
+            console.log("Gate Logs Response:", res.data)
+            if (Array.isArray(res.data)) return res.data
+            if (res.data?.data && Array.isArray(res.data.data)) return res.data.data
+            if (res.data?.logs && Array.isArray(res.data.logs)) return res.data.logs
+            return []
+        }
+    })
+
+    const { data: hostelLogs = [] } = useQuery<HostelLog[]>({
+        queryKey: ['hostel-logs'],
+        queryFn: async () => {
+            const res = await axiosClient.get(api.GET_HOSTEL_LOGS)
+            console.log("Hostel Logs Response:", res.data)
+            if (Array.isArray(res.data)) return res.data
+            if (res.data?.data && Array.isArray(res.data.data)) return res.data.data
+            if (res.data?.logs && Array.isArray(res.data.logs)) return res.data.logs
+            return []
+        }
+    })
+
     // Extract unique colleges
     const uniqueColleges = useMemo(() => {
-        const allLogs = [...mockGateLogs, ...mockHostelLogs];
+        const allLogs = [...gateLogs, ...hostelLogs];
         const colleges = Array.from(new Set(allLogs.map(log => toTitleCase(log.college_name || ""))));
         return colleges.sort();
-    }, []);
+    }, [gateLogs, hostelLogs]);
 
     // Filter Logic
     const filteredGateLogs = useMemo(() => {
-        return mockGateLogs.filter(log => {
+        return gateLogs.filter(log => {
             const matchesSearch =
                 log.student_name.toLowerCase().includes(search.toLowerCase()) ||
                 log.student_email.toLowerCase().includes(search.toLowerCase());
@@ -89,7 +117,7 @@ function LogsPage() {
     }, [search, directionFilter, collegeFilter]);
 
     const filteredHostelLogs = useMemo(() => {
-        return mockHostelLogs.filter(log => {
+        return hostelLogs.filter(log => {
             const matchesSearch =
                 log.student_name.toLowerCase().includes(search.toLowerCase()) ||
                 log.student_email.toLowerCase().includes(search.toLowerCase());
@@ -214,8 +242,8 @@ function LogsPage() {
                                         <div className={`mt-1 h-10 w-10 shrink-0 rounded-full flex items-center justify-center 
                                             ${log.direction === 'IN' ? 'bg-emerald-500/10' : 'bg-red-500/10'}`}>
                                             {log.direction === 'IN' ?
-                                                <LogIn size={20} className={log.direction === 'IN' ? 'text-emerald-500' : 'text-red-500'} /> :
-                                                <LogOut size={20} className={log.direction === 'IN' ? 'text-emerald-500' : 'text-red-500'} />
+                                                <LogIn size={20} className="text-emerald-500" /> :
+                                                <LogOut size={20} className="text-red-500" />
                                             }
                                         </div>
                                         <div className="space-y-1">

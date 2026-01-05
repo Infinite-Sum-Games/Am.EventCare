@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { Users, Activity, LogOut } from 'lucide-react'
+import { Users, Activity, LogOut, Clock } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 
 export default function Sidebar() {
@@ -35,6 +35,17 @@ export default function Sidebar() {
                 >
                     <Activity size={20} />
                     <span>Logs</span>
+                </Link>
+
+                <Link
+                    to="/pending-allotments"
+                    className="flex items-center gap-3 p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
+                    activeProps={{
+                        className: 'flex items-center gap-3 p-3 rounded-lg bg-amber-500/10 backdrop-blur-md border border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)] text-amber-500 font-medium'
+                    }}
+                >
+                    <Clock size={20} />
+                    <span>Pending Allotments</span>
                 </Link>
 
                 {/* <Link

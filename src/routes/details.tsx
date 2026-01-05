@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button"
 import { useState, useMemo, useEffect } from 'react'
 import {
     Building,
+    Bed,
     School,
     CircleX,
     User,
+    Users,
     CheckCircle2,
     AlertCircle,
     Home,
@@ -209,7 +211,10 @@ function ResponsesPage() {
         <div className="p-6 space-y-6 min-h-screen bg-background text-foreground font-sans animate-in fade-in duration-500">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Accommodation</h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
+                        <Users className="text-amber-500" />
+                        Accommodation
+                    </h1>
                     <p className="text-muted-foreground mt-1">Manage registration and accommodation details.</p>
                 </div>
                 <div className="bg-card border border-border rounded-lg px-4 py-2 text-sm text-muted-foreground shadow-sm">
