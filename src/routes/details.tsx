@@ -101,7 +101,7 @@ const toTitleCase = (str: string) => {
 
 
 function ResponsesPage() {
-    const { user, isLoading: isAuthLoading } = useAuth()
+    const { user, isLoading: isAuthLoading, isFetching: isAuthFetching } = useAuth()
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -129,7 +129,7 @@ function ResponsesPage() {
             console.log(res)
             return res.data.requests;
         },
-        enabled: !!user // Disable query if no user
+        enabled: !!user && !isAuthFetching // Disable query if no user or checking session
     })
 
     const filteredResponses = useMemo(() => {

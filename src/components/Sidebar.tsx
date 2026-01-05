@@ -26,7 +26,7 @@ export default function Sidebar() {
                     <span>Accommodation</span>
                 </Link>
 
-                <Link
+                {/* <Link
                     to="/logs"
                     className="flex items-center gap-3 p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
                     activeProps={{
@@ -35,7 +35,7 @@ export default function Sidebar() {
                 >
                     <Activity size={20} />
                     <span>Logs</span>
-                </Link>
+                </Link> */}
 
                 {/* <Link
                     to="/analytics"
@@ -65,9 +65,8 @@ export default function Sidebar() {
                         onClick={() => logout()}
                         className="w-full flex items-center justify-center gap-2 p-2 rounded-lg 
                                  text-xs font-medium text-muted-foreground
-                                 bg-black/20 backdrop-blur-sm border border-transparent
-                                 hover:bg-black/40 hover:text-red-400 hover:border-red-500/30 
-                                 hover:shadow-[0_0_15px_rgba(220,38,38,0.15)]
+                                 bg-black/20 backdrop-blur-sm border border-amber-500/30
+                                 hover:bg-amber-500/10 hover:text-amber-500 hover:border-amber-500 
                                  transition-all duration-300 group"
                     >
                         <LogOut size={14} className="group-hover:scale-105 transition-transform" />

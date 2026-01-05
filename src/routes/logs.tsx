@@ -8,16 +8,17 @@ export const Route = createFileRoute('/logs')({
 })
 
 function LogsPage() {
-    const { user, isLoading: isAuthLoading } = useAuth()
-    const navigate = useNavigate()
+    // const { user, isLoading: isAuthLoading } = useAuth()
+    // const navigate = useNavigate()
 
-    useEffect(() => {
-        if (!isAuthLoading && !user) {
-            navigate({ to: '/login' })
-        }
-    }, [user, isAuthLoading, navigate])
+    // useEffect(() => {
+    //     if (!isAuthLoading && !user) {
+    //         navigate({ to: '/login' })
+    //     }
+    // }, [user, isAuthLoading, navigate])
 
     return (
+        <></> /*
         <>
             <div className="flex flex-col items-center justify-center p-6 h-full bg-background text-foreground font-sans animate-in fade-in duration-500 space-y-8">
                 <div className="relative">
@@ -43,5 +44,6 @@ function LogsPage() {
                 </div>
             </div>
         </>
+        */
     )
 }

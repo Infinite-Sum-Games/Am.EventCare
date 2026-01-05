@@ -13,6 +13,7 @@ interface User {
 interface AuthContextType {
     user: User | null;
     isLoading: boolean;
+    isFetching: boolean;
     checkSession: () => Promise<void>;
     logout: () => Promise<void>;
 }
@@ -22,8 +23,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    
-    const { data: sessionData, isLoading: isSessionLoading, refetch } = useQuery({
+
+    const { data: sessionData, isLoading: isSessionLoading, isFetching, refetch } = useQuery({
         queryKey: ["session"],
         queryFn: async () => {
             const { data } = await axiosClient.get(api.SESSION);
@@ -56,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <AuthContext.Provider value={{ user, isLoading: isSessionLoading, checkSession, logout: async () => logout() }}>
+        <AuthContext.Provider value={{ user, isLoading: isSessionLoading, isFetching, checkSession, logout: async () => logout() }}>
             {children}
         </AuthContext.Provider>
     );
