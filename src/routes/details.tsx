@@ -432,7 +432,7 @@ function ResponsesPage() {
                                                 <Home size={18} className="opacity-70" />
                                                 <div>
                                                     <p className="text-[10px] uppercase text-muted-foreground font-semibold">Hostel</p>
-                                                    <p className="font-medium text-sm truncate">{response.hostel === 'Not Assigned' ? 'Not Assigned' : `${response.hostel}`}</p>
+                                                    <p className="font-medium text-xs truncate">{response.hostel === 'Not Assigned' ? 'Not Assigned' : `${response.hostel}`}</p>
                                                 </div>
                                             </div>
 
