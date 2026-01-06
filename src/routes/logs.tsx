@@ -11,7 +11,8 @@ import {
     ShieldCheck,
     UserCircle,
     MapPin,
-    Mail
+    Mail,
+    Loader2
 } from "lucide-react"
 import { useAuth } from '@/context/AuthContext'
 import { useEffect, useState, useMemo } from 'react'
@@ -27,7 +28,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { axiosClient } from '@/lib/axios'
 import type { GateLog, HostelLog } from '@/mocks/mockLogs'
@@ -38,14 +39,18 @@ export const Route = createFileRoute('/logs')({
 
 // Helper to format Date
 const formatDateTime = (isoString: string) => {
-    const date = new Date(isoString);
-    return new Intl.DateTimeFormat('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true
-    }).format(date);
+    try {
+        const date = new Date(isoString);
+        return new Intl.DateTimeFormat('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        }).format(date);
+    } catch (e) {
+        return "Invalid Date";
+    }
 }
 
 const toTitleCase = (str: string) => {
@@ -72,28 +77,40 @@ function LogsPage() {
     const [collegeFilter, setCollegeFilter] = useState("All colleges")
 
     // Data Fetching
-    const { data: gateLogs = [] } = useQuery<GateLog[]>({
+    const { 
+        data: gateLogs = [], 
+        isLoading: isGateLoading 
+    } = useQuery<GateLog[]>({
         queryKey: ['gate-logs'],
         queryFn: async () => {
             const res = await axiosClient.get(api.GET_GATE_LOGS)
-            console.log("Gate Logs Response:", res.data)
+            // console.log("Gate Logs Response:", res.data)
             if (Array.isArray(res.data)) return res.data
             if (res.data?.data && Array.isArray(res.data.data)) return res.data.data
             if (res.data?.logs && Array.isArray(res.data.logs)) return res.data.logs
             return []
-        }
+        },
+        enabled: !!user, // FIX 1: Wait for auth before fetching
+        placeholderData: keepPreviousData, // FIX 2: Keep old data while refetching to prevent flicker
+        refetchOnWindowFocus: false, // Optional: Prevents random glitches when switching tabs
     })
 
-    const { data: hostelLogs = [] } = useQuery<HostelLog[]>({
+    const { 
+        data: hostelLogs = [], 
+        isLoading: isHostelLoading 
+    } = useQuery<HostelLog[]>({
         queryKey: ['hostel-logs'],
         queryFn: async () => {
             const res = await axiosClient.get(api.GET_HOSTEL_LOGS)
-            console.log("Hostel Logs Response:", res.data)
+            // console.log("Hostel Logs Response:", res.data)
             if (Array.isArray(res.data)) return res.data
             if (res.data?.data && Array.isArray(res.data.data)) return res.data.data
             if (res.data?.logs && Array.isArray(res.data.logs)) return res.data.logs
             return []
-        }
+        },
+        enabled: !!user, // FIX 1
+        placeholderData: keepPreviousData, // FIX 2
+        refetchOnWindowFocus: false,
     })
 
     // Extract unique colleges
@@ -107,26 +124,38 @@ function LogsPage() {
     const filteredGateLogs = useMemo(() => {
         return gateLogs.filter(log => {
             const matchesSearch =
-                log.student_name.toLowerCase().includes(search.toLowerCase()) ||
-                log.student_email.toLowerCase().includes(search.toLowerCase());
+                (log.student_name || "").toLowerCase().includes(search.toLowerCase()) ||
+                (log.student_email || "").toLowerCase().includes(search.toLowerCase());
             const matchesDirection = directionFilter === "All" || log.direction === directionFilter;
             const matchesCollege = collegeFilter === "All colleges" || toTitleCase(log.college_name) === collegeFilter;
 
             return matchesSearch && matchesDirection && matchesCollege;
         });
-    }, [search, directionFilter, collegeFilter]);
+    }, [gateLogs, search, directionFilter, collegeFilter]);
 
     const filteredHostelLogs = useMemo(() => {
         return hostelLogs.filter(log => {
             const matchesSearch =
-                log.student_name.toLowerCase().includes(search.toLowerCase()) ||
-                log.student_email.toLowerCase().includes(search.toLowerCase());
+                (log.student_name || "").toLowerCase().includes(search.toLowerCase()) ||
+                (log.student_email || "").toLowerCase().includes(search.toLowerCase());
             const matchesCollege = collegeFilter === "All colleges" || toTitleCase(log.college_name) === collegeFilter;
 
             return matchesSearch && matchesCollege;
         });
-    }, [search, collegeFilter]);
+    }, [hostelLogs, search, collegeFilter]);
 
+    // FIX 3: Global Loading State
+    // Check if we are doing the very first load (and have no data yet)
+    const isFirstLoad = (isGateLoading && gateLogs.length === 0) || (isHostelLoading && hostelLogs.length === 0) || isAuthLoading;
+
+    if (isFirstLoad) {
+        return (
+            <div className="flex h-full items-center justify-center space-y-4 flex-col opacity-50">
+                <Loader2 className="h-10 w-10 animate-spin text-amber-500" />
+                <p className="text-sm font-mono text-muted-foreground animate-pulse">Syncing logs...</p>
+            </div>
+        )
+    }
 
     return (
         <div className="flex flex-col h-full bg-background text-foreground font-sans animate-in fade-in duration-500 overflow-hidden">
@@ -160,11 +189,11 @@ function LogsPage() {
                     <div className="flex flex-col md:flex-row gap-4 items-center">
                         {/* College Dropdown */}
                         <Select value={collegeFilter} onValueChange={setCollegeFilter}>
-                            <SelectTrigger className="w-full md:w-[280px] pl-9 relative bg-card/50 border-input">
+                            <SelectTrigger className="w-full md:w-70 pl-9 relative bg-card/50 border-input">
                                 <School size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                                 <SelectValue placeholder="All colleges" />
                             </SelectTrigger>
-                            <SelectContent position="popper" className="max-h-[300px]">
+                            <SelectContent position="popper" className="max-h-75">
                                 <SelectGroup>
                                     <SelectLabel>Colleges</SelectLabel>
                                     <SelectItem value="All colleges">All colleges</SelectItem>
@@ -220,7 +249,7 @@ function LogsPage() {
             {/* Content Grid */}
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-hidden">
                 {/* COLUMN 1: Gate Access Logs */}
-                <div className="flex flex-col border-r border-border overflow-hidden bg-gradient-to-b from-transparent to-background/5">
+                <div className="flex flex-col border-r border-border overflow-hidden bg-linear-to-b from-transparent to-background/5">
                     <div className="p-4 bg-muted/30 border-b border-border flex items-center justify-between sticky top-0 backdrop-blur-sm z-10">
                         <h2 className="text-lg font-semibold flex items-center gap-2 text-foreground/90">
                             <ArrowRightLeft className="text-blue-500" size={20} />
@@ -278,7 +307,7 @@ function LogsPage() {
                 </div>
 
                 {/* COLUMN 2: Hostel Check-in Logs */}
-                <div className="flex flex-col overflow-hidden bg-gradient-to-b from-transparent to-background/5">
+                <div className="flex flex-col overflow-hidden bg-linear-to-b from-transparent to-background/5">
                     <div className="p-4 bg-muted/30 border-b border-border flex items-center justify-between sticky top-0 backdrop-blur-sm z-10">
                         <h2 className="text-lg font-semibold flex items-center gap-2 text-foreground/90">
                             <Building2 className="text-purple-500" size={20} />
