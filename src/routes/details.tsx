@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { useState, useMemo, useEffect } from 'react'
 import {
     Building,
-    Bed,
     School,
     CircleX,
     User,
