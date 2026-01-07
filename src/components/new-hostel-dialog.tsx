@@ -46,6 +46,7 @@ export function NewHostelDialog({ onCreate, isLoading }: NewHostelDialogProps) {
             hostel_name: `${baseName.toUpperCase()} BHAVANAM - ${roomType}`,
             is_male: gender === 'male',
             room_count: parseInt(roomCount),
+            room_filled: 0,
             warden_email: email,
             day_scholar_price: parseFloat(dayScholarPrice),
             outsider_price: parseFloat(outsiderPrice),
