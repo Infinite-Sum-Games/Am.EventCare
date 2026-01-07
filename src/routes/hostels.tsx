@@ -184,7 +184,7 @@ function HostelComponent() {
                                     <div className='flex flex-row items-center shrink-0 ml-auto lg:ml-0'>
                                         <div className="bg-secondary p-2 rounded-md flex flex-col text-center justify-center items-center min-w-24">
                                             <p className="text-[10px] font-bold text-blue-500 uppercase tracking-wider">Total Beds</p>
-                                            <p className="text-xl font-bold">{hostel.room_count}</p>
+                                            <p className="text-xl font-bold">{hostel.room_count-hostel.room_filled}/{hostel.room_count}</p>
                                         </div>
                                         
                                         <Separator orientation="vertical" className="mx-4 h-12" />
