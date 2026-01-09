@@ -15,5 +15,8 @@ export const api = {
     DELETE_UNCLAIMED_BED: (bedId: string) => `/accommodation/panel/beds/unclaimed/${bedId}`,
 
     GET_GATE_LOGS: '/accommodation/panel/gate/logs',
-    GET_HOSTEL_LOGS: '/accommodation/panel/hostel/logs'
+    GET_HOSTEL_LOGS: '/accommodation/panel/hostel/logs',
+
+    GET_INSIDE_CAMPUS_ANALYTICS: '/analytics/hospitality/inside',
+    GET_LIVE_BEDS_ANALYTICS: '/analytics/hospitality/beds'
 }

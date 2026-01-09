@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { Users, Activity, LogOut, Hotel } from 'lucide-react'
 import { Clock } from 'lucide-react'
+import { Users, Activity, LogOut, Clock, BarChart3 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 
 export default function Sidebar() {
@@ -60,7 +61,7 @@ export default function Sidebar() {
                     <span>Pending Allotments</span>
                 </Link>
 
-                {/* <Link
+                <Link
                     to="/analytics"
                     className="flex items-center gap-3 p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300"
                     activeProps={{
@@ -69,7 +70,7 @@ export default function Sidebar() {
                 >
                     <BarChart3 size={20} />
                     <span>Analytics</span>
-                </Link> */}
+                </Link>
             </nav>
 
             <div className="p-4 border-t border-sidebar-border">
