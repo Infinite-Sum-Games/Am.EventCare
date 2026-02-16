@@ -5,12 +5,12 @@ import {
     ArrowRightLeft,
     LogIn,
     LogOut,
-    Building2,
+    // Building2,
     CalendarClock,
     School,
     ShieldCheck,
-    UserCircle,
-    MapPin,
+    // UserCircle,
+    // MapPin,
     Mail,
     Loader2
 } from "lucide-react"
@@ -133,16 +133,16 @@ function LogsPage() {
         });
     }, [gateLogs, search, directionFilter, collegeFilter]);
 
-    const filteredHostelLogs = useMemo(() => {
-        return hostelLogs.filter(log => {
-            const matchesSearch =
-                (log.student_name || "").toLowerCase().includes(search.toLowerCase()) ||
-                (log.student_email || "").toLowerCase().includes(search.toLowerCase());
-            const matchesCollege = collegeFilter === "All colleges" || toTitleCase(log.college_name) === collegeFilter;
+    // const filteredHostelLogs = useMemo(() => {
+    //     return hostelLogs.filter(log => {
+    //         const matchesSearch =
+    //             (log.student_name || "").toLowerCase().includes(search.toLowerCase()) ||
+    //             (log.student_email || "").toLowerCase().includes(search.toLowerCase());
+    //         const matchesCollege = collegeFilter === "All colleges" || toTitleCase(log.college_name) === collegeFilter;
 
-            return matchesSearch && matchesCollege;
-        });
-    }, [hostelLogs, search, collegeFilter]);
+    //         return matchesSearch && matchesCollege;
+    //     });
+    // }, [hostelLogs, search, collegeFilter]);
 
     // FIX 3: Global Loading State
     // Check if we are doing the very first load (and have no data yet)
@@ -247,7 +247,8 @@ function LogsPage() {
             </div>
 
             {/* Content Grid */}
-            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-hidden">
+            {/* <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-hidden"> */}
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-1 gap-0 overflow-hidden">
                 {/* COLUMN 1: Gate Access Logs */}
                 <div className="flex flex-col border-r border-border overflow-hidden bg-linear-to-b from-transparent to-background/5">
                     <div className="p-4 bg-muted/30 border-b border-border flex items-center justify-between sticky top-0 backdrop-blur-sm z-10">
@@ -307,7 +308,7 @@ function LogsPage() {
                 </div>
 
                 {/* COLUMN 2: Hostel Check-in Logs */}
-                <div className="flex flex-col overflow-hidden bg-linear-to-b from-transparent to-background/5">
+                {/* <div className="flex flex-col overflow-hidden bg-linear-to-b from-transparent to-background/5">
                     <div className="p-4 bg-muted/30 border-b border-border flex items-center justify-between sticky top-0 backdrop-blur-sm z-10">
                         <h2 className="text-lg font-semibold flex items-center gap-2 text-foreground/90">
                             <Building2 className="text-purple-500" size={20} />
@@ -356,7 +357,7 @@ function LogsPage() {
                             <EmptyState message="No hostel check-ins found" />
                         )}
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     )
