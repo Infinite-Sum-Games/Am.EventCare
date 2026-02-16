@@ -5,12 +5,12 @@ import {
     ArrowRightLeft,
     LogIn,
     LogOut,
-    Building2,
+    // Building2,
     CalendarClock,
     School,
     ShieldCheck,
-    UserCircle,
-    MapPin,
+    // UserCircle,
+    // MapPin,
     Mail,
     Loader2
 } from "lucide-react"
@@ -133,16 +133,16 @@ function LogsPage() {
         });
     }, [gateLogs, search, directionFilter, collegeFilter]);
 
-    const filteredHostelLogs = useMemo(() => {
-        return hostelLogs.filter(log => {
-            const matchesSearch =
-                (log.student_name || "").toLowerCase().includes(search.toLowerCase()) ||
-                (log.student_email || "").toLowerCase().includes(search.toLowerCase());
-            const matchesCollege = collegeFilter === "All colleges" || toTitleCase(log.college_name) === collegeFilter;
+    // const filteredHostelLogs = useMemo(() => {
+    //     return hostelLogs.filter(log => {
+    //         const matchesSearch =
+    //             (log.student_name || "").toLowerCase().includes(search.toLowerCase()) ||
+    //             (log.student_email || "").toLowerCase().includes(search.toLowerCase());
+    //         const matchesCollege = collegeFilter === "All colleges" || toTitleCase(log.college_name) === collegeFilter;
 
-            return matchesSearch && matchesCollege;
-        });
-    }, [hostelLogs, search, collegeFilter]);
+    //         return matchesSearch && matchesCollege;
+    //     });
+    // }, [hostelLogs, search, collegeFilter]);
 
     // FIX 3: Global Loading State
     // Check if we are doing the very first load (and have no data yet)
