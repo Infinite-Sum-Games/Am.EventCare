@@ -10,7 +10,7 @@ export default function Sidebar() {
 		<aside className="w-64 bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col h-screen sticky top-0">
 			<div className="p-6 border-b border-sidebar-border">
 				<h1 className="text-2xl font-bold bg-linear-to-r from-primary to-orange-400 bg-clip-text text-transparent">
-					Anokha 2026
+					Pragati 2026
 				</h1>
 				<p className="text-xs text-muted-foreground mt-1">Hospitality Panel</p>
 			</div>

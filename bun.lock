@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "anokha-2025-hospitality-panel",
+      "name": "pragati-2026-hospitality-panel",
       "dependencies": {
         "@hookform/resolvers": "^5.2.2",
         "@radix-ui/react-alert-dialog": "^1.1.15",
